@@ -1,0 +1,2 @@
+# dbpro-ws17-kg_neo4j
+Das Ziel des Projektes ist die Entwicklung eines Knowledge-Graphen für Firmeninformationen in Deutschland. Der Knowledge-Graph soll mit der Software Neo4J entwickelt werden. Die Erarbeitung des Designs des Knowledgegraphen dessen Relationen und Attribute ist Teil des Projektes. Beim Aufbau des Graphen kann auf einen Datenbestand des Projekts Smart Data for Mobility zurückgegriffen werden. Der Knowledgegraph soll durch die Entwicklung eines Suchinterfaces vervollständigt werden.
