@@ -23,10 +23,20 @@ public class GraphDatabaseServiceTest {
 
         AddTestData();
 
+
+
         List<String> allLabels = dbService.getAllLabels();
 
         for (String label: allLabels) {
-            System.out.println(label);
+            System.out.println("Label:" + label);
+        }
+
+        List<String> searchLabels = new ArrayList<String>();
+        searchLabels.add("Person");
+        List<Node> allNodes = dbService.getNodes(searchLabels);
+
+        for (Node node: allNodes) {
+            System.out.println("Node:" + node.getCypher("node"));
         }
 
         try {
