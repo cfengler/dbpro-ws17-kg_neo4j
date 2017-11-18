@@ -1,10 +1,11 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.common;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Relation extends Entity {
+public class Relation {
 
     public Node firstNode;
     public Node secondNode;
@@ -15,30 +16,18 @@ public class Relation extends Entity {
     public Relation(Node firstNode, Node secondNode) {
         this.firstNode = firstNode;
         this.secondNode = secondNode;
+
+        this.labels = new ArrayList<String>();
+        this.properties = new HashMap<String, String>();
     }
 
     public String getCypher(String key) {
         String result = "[" + key;
 
-        for (String label: labels) {
-            result += ":" + label;
-        }
+        result += CypherService.getCypher(labels);
 
-        if (!properties.isEmpty()) {
-            result += " { ";
+        result += CypherService.getCypther(properties);
 
-            for (Iterator<Map.Entry<String, String>> mapEntryIterator = properties.entrySet().iterator(); mapEntryIterator.hasNext();) {
-                Map.Entry<String, String> mapEntry = mapEntryIterator.next();
-
-                result += mapEntry.getKey() + ": '" + mapEntry.getValue() + "'";
-
-                if (mapEntryIterator.hasNext()) {
-                    result += ", ";
-                }
-            }
-
-            result += " }";
-        }
         result += "]";
 
         return result;
