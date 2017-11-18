@@ -15,6 +15,7 @@ import javafx.scene.shape.Ellipse;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,10 +110,10 @@ public class kg_neo4j_Application extends Application {
     }
 
     private static void initData() {
-        SmartDataWebImporter importer = new SmartDataWebImporter();
-        importer.Connect();
+        SmartDataWebImporter importer = new SmartDataWebImporter(Paths.get("resources/data"));
+        importer.connect();
         List<String> importedLabels = importer.getAllLabels();
-        importer.Disconnect();
+        importer.disconnect();
 
         for(String s: importedLabels) {
             addLabel(s);
