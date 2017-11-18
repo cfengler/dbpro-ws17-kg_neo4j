@@ -1,6 +1,7 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.importation;
 
 public class TestImporter {
+
     public static void main(String[] args) {
         SmartDataWebImporter importer = new SmartDataWebImporter();
         importer.Connect();
@@ -8,4 +9,5 @@ public class TestImporter {
         importer.getAllLabels();
         importer.Disconnect();
     }
+
 }
