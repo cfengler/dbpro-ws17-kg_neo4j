@@ -51,7 +51,8 @@ public class GraphDatabaseService implements Closeable {
                 if (properties != null && !properties.isEmpty()) {
                     query += " " + CypherService.getCypther(properties);
                 }
-                query += ")";
+                query += ")" + System.lineSeparator();
+                query += "RETURN searchedNode";
 
                 StatementResult result = transaction.run(query);
                 //TODO: map StatementResult to List<Node>
