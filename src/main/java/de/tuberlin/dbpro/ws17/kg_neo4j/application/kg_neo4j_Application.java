@@ -61,6 +61,17 @@ public class kg_neo4j_Application extends Application {
         relationsHidden = false;
         primaryStage.setTitle("DBPRO");
 
+        initPanes();
+
+        initButtons();
+
+        initData();
+
+        primaryStage.setScene(new Scene(paneFoundation, 500, 500));
+        primaryStage.show();
+    }
+
+    private static void initPanes() {
         paneFoundation = new BorderPane();
         Label labelHeadline = new Label("DBPRO Neo4J Knowledge Graph");
         paneFoundation.setTop(labelHeadline);
@@ -95,8 +106,40 @@ public class kg_neo4j_Application extends Application {
         paneResult.setPadding(new Insets(5, 5, 5, 5));
         paneResult.setPrefWrapLength(500);
         paneFoundation.setCenter(paneResult);
+    }
 
+    private static void initData() {
+        SmartDataWebImporter importer = new SmartDataWebImporter();
+        importer.Connect();
+        List<String> importedLabels = importer.getAllLabels();
+        importer.Disconnect();
 
+        for(String s: importedLabels) {
+            addLabel(s);
+        }
+
+        for(int i = 0;i < 10;i++) {
+            addNode("Node " + (i + 1));
+        }
+
+        for(int i = 0;i < 10;i++) {
+            addRelation("Relation " + (i + 1));
+        }
+
+        Circle circle = new Circle(20, 20f, 7);
+        circle.setFill(Color.RED);
+        paneResult.getChildren().add(circle);
+
+        Ellipse ellipse = new Ellipse();
+        ellipse.setRadiusX(50);
+        ellipse.setRadiusY(25);
+        ellipse.setStroke(Color.BLACK);
+        ellipse.setStrokeWidth(3);
+        ellipse.setFill(Color.TRANSPARENT);
+        paneResult.getChildren().add(ellipse);
+    }
+
+    private static void initButtons() {
         showLabels = new Button("anzeigen");
         showLabels.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -121,39 +164,6 @@ public class kg_neo4j_Application extends Application {
                 unhideRelations();
             }
         });
-
-        SmartDataWebImporter importer = new SmartDataWebImporter();
-        importer.Connect();
-        List<String> importedLabels = importer.getAllLabels();
-        importer.Disconnect();
-
-        for(String s: importedLabels) {
-            addLabel(s);
-        }
-
-        for(int i = 0;i < 10;i++) {
-            addNode("Node " + (i + 1));
-        }
-
-        for(int i = 0;i < 10;i++) {
-            addRelation("Relation " + (i + 1));
-        }
-
-        Circle circle = new Circle(20, 20f, 7);
-        circle.setFill(Color.RED);
-
-        Ellipse ellipse = new Ellipse();
-        ellipse.setRadiusX(50);
-        ellipse.setRadiusY(25);
-        ellipse.setStroke(Color.BLACK);
-        ellipse.setStrokeWidth(3);
-        ellipse.setFill(Color.TRANSPARENT);
-        paneResult.getChildren().add(ellipse);
-
-        paneResult.getChildren().add(circle);
-
-        primaryStage.setScene(new Scene(paneFoundation, 500, 500));
-        primaryStage.show();
     }
 
     public static void addLabel(String label) {
