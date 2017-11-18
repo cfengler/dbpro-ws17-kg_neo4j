@@ -2,24 +2,55 @@ package de.tuberlin.dbpro.ws17.kg_neo4j.importation;
 
 import de.tuberlin.dbpro.ws17.kg_neo4j.common.GraphDatabaseService;
 import de.tuberlin.dbpro.ws17.kg_neo4j.common.Node;
+import de.tuberlin.dbpro.ws17.kg_neo4j.common.Relation;
 import org.neo4j.driver.v1.*;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class SmartDataWebImporter {
 
     private GraphDatabaseService graphDatabaseService = null;
+    private Path dataDirPath;
+    private List<Path> dataFilePathList = new ArrayList<>();
 
-    public SmartDataWebImporter() {
+    public SmartDataWebImporter(Path dataDirPath) {
+        this.dataDirPath = dataDirPath;
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(dataDirPath.toString()))) {
+            for (Path path : directoryStream) {
+                dataFilePathList.add(path);
+            }
+        } catch (IOException ex) {}
+
+        // Debug ausgaben
+        System.out.println("Path: " + dataDirPath.toAbsolutePath().toString() + "\n Files: " + dataFilePathList.toString());
+        try (BufferedReader br = new BufferedReader(new FileReader(dataFilePathList.get(0).toAbsolutePath().toString()))) {
+            String line;
+            // 82000
+            for(int i = 0; (line = br.readLine()) != null && i < 2000; i++) {
+                System.out.println(line);
+            }
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
-    public void Connect() {
+    public void connect() {
         graphDatabaseService = new GraphDatabaseService();
     }
 
-    public void Disconnect() {
+    public void disconnect() {
         try {
             graphDatabaseService.close();
         }
@@ -30,54 +61,53 @@ public class SmartDataWebImporter {
 
     public void createData() {
 
-        Node nodeChristian = new Node();
-        nodeChristian.labels = new ArrayList<String>();
-        nodeChristian.labels.add("Person");
-        nodeChristian.labels.add("Meister");
+        Pattern p = Pattern.compile("[<](?<subject>.+?)[>]\\s[<](?<predicate>.+?)[>]\\s[<](?<object>.+?)[>]\\s[<](.+?)[>]\\s.");
+        Matcher m;
 
-        nodeChristian.properties = new HashMap<String, String>();
-        nodeChristian.properties.put("prename", "Christian");
-        nodeChristian.properties.put("name", "Fengler");
+        try (BufferedReader br = new BufferedReader(new FileReader(dataFilePathList.get(0).toAbsolutePath().toString()))) {
+            String line;
+            // 82000
+            for(int i = 0; (line = br.readLine()) != null && i < 2000; i++) {
+                m = p.matcher(line);
+                Node subject = new Node();
+                subject.labels = new ArrayList<String>();
+                subject.labels.add(m.group("subject"));
+                subject.properties = new HashMap<String, String>();
+                subject.properties.put("Data", m.group("subject"));
 
-        Node nodeMagnus = new Node();
-        nodeMagnus.labels.add("Person");
-        nodeMagnus.labels.add("Padawan");
+                Node object = new Node();
+                object.labels = new ArrayList<String>();
+                object.labels.add(m.group("object"));
+                object.properties = new HashMap<String, String>();
+                object.properties.put("Data", m.group("object"));
 
-        nodeMagnus.properties = new HashMap<String, String>();
-        nodeMagnus.properties.put("prename", "Magnus");
-        nodeMagnus.properties.put("name", "Brieler");
+                Relation predicate = new Relation(subject, object);
+                predicate.labels = new ArrayList<String>();
+                predicate.labels.add(m.group("predicate"));
+                predicate.properties = new HashMap<String, String>();
+                predicate.properties.put("Data", m.group("predicate"));
 
-        Node nodeJulian = new Node();
-        nodeJulian.labels.add("Person");
-        nodeJulian.labels.add("Padawan");
+                graphDatabaseService.addNode(subject);
+                graphDatabaseService.addNode(object);
+                graphDatabaseService.addRelation(predicate);
 
-        nodeJulian.properties = new HashMap<String, String>();
-        nodeJulian.properties.put("prename", "Julian");
-        nodeJulian.properties.put("name", "Legler");
-
-        graphDatabaseService.addNode(nodeChristian);
-        graphDatabaseService.addNode(nodeMagnus);
-        graphDatabaseService.addNode(nodeJulian);
-    }
-
-    private void loadNodeId(Node node) {
-
-        session.writeTransaction(new TransactionWork<Object>() {
-            @Override
-            public Object execute(Transaction transaction) {
-                return null;
             }
-        });
-
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
 
 
-
-
-
-
+    public List<String> getAllLabels() {
+        return null;
+    }
 
 
 //    public List<Node> getAllNodes() {
