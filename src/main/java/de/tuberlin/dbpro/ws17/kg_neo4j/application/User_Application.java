@@ -47,15 +47,26 @@ public class User_Application extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("DBPRO");
 
+        initSearch();
+        initSelection();
+
+        primaryStage.setScene(new Scene(pnFoundation, 1000, 500));
+        primaryStage.show();
+    }
+
+    private static void initSearch() {
+        //Fundamentales Pane
         pnSearch.setAlignment(Pos.TOP_CENTER);
         pnSearch.setVgap(5);
         pnSearchType.setAlignment(Pos.TOP_CENTER);
         pnSearchType.setSpacing(20);
 
+        //Ueberschrift
         lblHeadline.setText("DBPRO Neo4J Knowledge Graph");
         lblHeadline.setFont(new Font("Helvetica Neue", 30));
         pnSearch.add(lblHeadline, 0, 0);
 
+        //Suchfeld
         tfSearch.setOnKeyPressed(new EventHandler<KeyEvent>()
         {
             @Override
@@ -71,6 +82,7 @@ public class User_Application extends Application {
         tfSearch.requestFocus();
         pnSearchField.setCenter(tfSearch);
 
+        //Suchbutton
         btnSearch.setText("suchen");
         btnSearch.setFont(new Font("Helvetica Neue", 13));
         btnSearch.setOnAction(new EventHandler<ActionEvent>() {
@@ -82,6 +94,7 @@ public class User_Application extends Application {
         pnSearchField.setRight(btnSearch);
         pnSearch.add(pnSearchField, 0, 1);
 
+        //Radiobuttons fuer die Suchart
         rbNodes.setText("Knoten");
         rbNodes.setSelected(true);
         rbNodes.setToggleGroup(tgSearch);
@@ -91,94 +104,79 @@ public class User_Application extends Application {
         rbLabels.setToggleGroup(tgSearch);
         pnSearchType.getChildren().add(rbLabels);
 
-        rbEdges.setText("Kanten");
+        rbEdges.setText("Kante");
         rbEdges.setToggleGroup(tgSearch);
         pnSearchType.getChildren().add(rbEdges);
         pnSearch.add(pnSearchType, 0, 2);
 
         pnFoundation.setTop(pnSearch);
+    }
 
+    private static void initSelection() {
+        //Fundamentale Panes
         pnSelectionHeadline.setPadding(new Insets(5, 5, 5, 5));
+        pnSelection.setSpacing(5);
+        pnSelectionHeadline.setCenter(spSelection);
+        pnFoundation.setLeft(pnSelectionHeadline);
 
+        //Ueberschrift
         lblSelection.setText("Auswahl");
         lblSelection.setFont(new Font("Helvetica Neue", 20));
         pnSelectionHeadline.setTop(lblSelection);
 
-        pnSelection.setSpacing(5);
-
+        //Pane mit Auswahlmoeglichkeiten
         spSelection.setContent(pnSelection);
         spSelection.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         spSelection.setStyle("-fx-background-color:transparent;");
-        //spSelection.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-        //spSelection.setFitToWidth(true);
 
-        pnSelectionHeadline.setCenter(spSelection);
-        pnFoundation.setLeft(pnSelectionHeadline);
-
+        //Pane nach Auswahl
         btnSelectionReturn.setText("<- zurück");
         btnSelectionReturn.setFont(new Font("Helvetica Neue", 13));
+        pnSelectionReturn.setSpacing(5);
         btnSelectionReturn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 unhideSelection();
             }
         });
-
-        primaryStage.setScene(new Scene(pnFoundation, 1000, 500));
-        primaryStage.show();
     }
 
     public static void search() {
         System.out.println("suchen...");
         String term = tfSearch.getText();
         int selection;
+        if(term.equals("")) {
+            return;
+        }
 
         pnSelection.getChildren().remove(0, pnSelection.getChildren().size());
 
         if(rbNodes.isSelected()) {
             selection = 0;
             lblSelection.setText("Knoten");
-            //HIER MUSS DIE SUCHE NACH KNOTEN AN DIE DATENBANK WEITERGEGEBEN WERDEN
-            for(int i = 0;i < 10;i++) {
-                Button btn = new Button("Knoten " + term + " " + (i + 1));
-                btn.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        hideSelection(((Button)event.getSource()).getText());
-                    }
-                });
-                pnSelection.getChildren().add(btn);
-            }
+            //TODO: HIER MUSS DIE SUCHE NACH KNOTEN AN DIE LOGIK WEITERGEGEBEN WERDEN
+
         } else if (rbLabels.isSelected()) {
             selection = 1;
             lblSelection.setText("Bezeichnungen");
-            //HIER MUSS DIE SUCHE NACH LABELS AN DIE DATENBANK WEITERGEGEBEN WERDEN
-            for(int i = 0;i < 10;i++) {
-                Button btn = new Button("Bezeichnung " + term + " " + (i + 1));
-                btn.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        hideSelection(((Button)event.getSource()).getText());
-                    }
-                });
-                pnSelection.getChildren().add(btn);
-            }
+            //TODO: HIER MUSS DIE SUCHE NACH LABELS AN DIE LOGIK WEITERGEGEBEN WERDEN
+
         } else {
             selection = 2;
             lblSelection.setText("Kanten");
-            //HIER MUSS DIE SUCHE NACH KANTEN AN DIE DATENBANK WEITERGEGEBEN WERDEN
-            for(int i = 0;i < 10;i++) {
-                Button btn = new Button("Kante " + term + " " + (i + 1));
-                btn.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        hideSelection(((Button)event.getSource()).getText());
-                    }
-                });
-                pnSelection.getChildren().add(btn);
-            }
-        }
+            //TODO: HIER MUSS DIE SUCHE NACH KANTEN AN DIE LOGIK WEITERGEGEBEN WERDEN
 
+        }
+        for(int i = 0;i < 10;i++) {
+            Button btn = new Button(lblSelection.getText() + " " + term + " " + (i + 1));
+            btn.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    hideSelection(((Button)event.getSource()).getText());
+                }
+            });
+            pnSelection.getChildren().add(btn);
+        }
     }
 
     private static void hideSelection(String term) {
