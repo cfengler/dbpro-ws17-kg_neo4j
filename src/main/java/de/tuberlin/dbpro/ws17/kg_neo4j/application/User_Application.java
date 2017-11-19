@@ -3,6 +3,7 @@ package de.tuberlin.dbpro.ws17.kg_neo4j.application;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -26,11 +27,15 @@ public class User_Application extends Application {
     private static final HBox pnSearchType = new HBox();
     private static final VBox pnSelection = new VBox();
     private static final ScrollPane spSelection = new ScrollPane();
+    private static final BorderPane pnSelectionHeadline = new BorderPane();
+    private static final VBox pnSelectionReturn = new VBox();
 
     private static final Label lblHeadline = new Label();
     private static final Label lblSelection = new Label();
+    private static final Label lblSelectionReturn = new Label();
 
     private static final Button btnSearch = new Button();
+    private static final Button btnSelectionReturn = new Button();
 
     private static final TextField tfSearch = new TextField();
 
@@ -67,6 +72,7 @@ public class User_Application extends Application {
         pnSearchField.setCenter(tfSearch);
 
         btnSearch.setText("suchen");
+        btnSearch.setFont(new Font("Helvetica Neue", 13));
         btnSearch.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -92,22 +98,31 @@ public class User_Application extends Application {
 
         pnFoundation.setTop(pnSearch);
 
+        pnSelectionHeadline.setPadding(new Insets(5, 5, 5, 5));
+
         lblSelection.setText("Auswahl");
-        lblSelection.setFont(new Font("Helvetica Neue", 13));
-        pnSelection.getChildren().add(lblSelection);
+        lblSelection.setFont(new Font("Helvetica Neue", 20));
+        pnSelectionHeadline.setTop(lblSelection);
+
+        pnSelection.setSpacing(5);
 
         spSelection.setContent(pnSelection);
         spSelection.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        spSelection.setStyle("-fx-background-color:transparent;");
         //spSelection.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         //spSelection.setFitToWidth(true);
-        
 
-        pnFoundation.setLeft(spSelection);
+        pnSelectionHeadline.setCenter(spSelection);
+        pnFoundation.setLeft(pnSelectionHeadline);
 
-        for(int i = 0;i < 10;i++) {
-            Button btn = new Button("Testbutton " + (i + 1));
-            pnSelection.getChildren().add(btn);
-        }
+        btnSelectionReturn.setText("<- zurück");
+        btnSelectionReturn.setFont(new Font("Helvetica Neue", 13));
+        btnSelectionReturn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                unhideSelection();
+            }
+        });
 
         primaryStage.setScene(new Scene(pnFoundation, 1000, 500));
         primaryStage.show();
@@ -117,13 +132,66 @@ public class User_Application extends Application {
         System.out.println("suchen...");
         String term = tfSearch.getText();
         int selection;
+
+        pnSelection.getChildren().remove(0, pnSelection.getChildren().size());
+
         if(rbNodes.isSelected()) {
             selection = 0;
+            lblSelection.setText("Knoten");
+            //HIER MUSS DIE SUCHE NACH KNOTEN AN DIE DATENBANK WEITERGEGEBEN WERDEN
+            for(int i = 0;i < 10;i++) {
+                Button btn = new Button("Knoten " + term + " " + (i + 1));
+                btn.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        hideSelection(((Button)event.getSource()).getText());
+                    }
+                });
+                pnSelection.getChildren().add(btn);
+            }
         } else if (rbLabels.isSelected()) {
             selection = 1;
+            lblSelection.setText("Bezeichnungen");
+            //HIER MUSS DIE SUCHE NACH LABELS AN DIE DATENBANK WEITERGEGEBEN WERDEN
+            for(int i = 0;i < 10;i++) {
+                Button btn = new Button("Bezeichnung " + term + " " + (i + 1));
+                btn.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        hideSelection(((Button)event.getSource()).getText());
+                    }
+                });
+                pnSelection.getChildren().add(btn);
+            }
         } else {
             selection = 2;
+            lblSelection.setText("Kanten");
+            //HIER MUSS DIE SUCHE NACH KANTEN AN DIE DATENBANK WEITERGEGEBEN WERDEN
+            for(int i = 0;i < 10;i++) {
+                Button btn = new Button("Kante " + term + " " + (i + 1));
+                btn.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        hideSelection(((Button)event.getSource()).getText());
+                    }
+                });
+                pnSelection.getChildren().add(btn);
+            }
         }
 
+    }
+
+    private static void hideSelection(String term) {
+        System.out.println("called hideSelection from " + term);
+        pnSelectionReturn.getChildren().remove(0, pnSelectionReturn.getChildren().size());
+        lblSelectionReturn.setText(term);
+        pnSelectionReturn.getChildren().add(lblSelectionReturn);
+        pnSelectionReturn.getChildren().add(btnSelectionReturn);
+        spSelection.setContent(pnSelectionReturn);
+    }
+
+    private static void unhideSelection() {
+        System.out.println("called unhideSelection");
+        spSelection.setContent(pnSelection);
     }
 }
