@@ -5,16 +5,21 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class StringContainsAnalyser {
 
-    private static String searchString = "4295868979";
-    private static List<String> linesFound;
+    private static String searchString = "permid_4295868979";
+    //private static List<String> linesFound;
+
+    public static List<String> linesToWrite;
+
 
     public static void main(String[] args) {
-        linesFound = new ArrayList<String>();
+        linesToWrite = new ArrayList<String>();
 
         String directory = "/media/cfengler/Kingston DT HyperX 3.0/Daten/001-030/";
         List<String> fileNames = new ArrayList<String>();
@@ -25,9 +30,9 @@ public class StringContainsAnalyser {
         try {
             for (String fileName : fileNames) {
                 try (Stream<String> stream = Files.lines(Paths.get(directory + fileName))) {
-                    stream.forEach(line -> {
+                    stream.parallel().forEach(line -> {
                         if (line.contains(searchString)) {
-                            linesFound.add(line);
+                            linesToWrite.add(fileName + "   " + line);
                         }
                     });
                 }
@@ -37,11 +42,11 @@ public class StringContainsAnalyser {
 
         }
 
-        String analysisFile = directory + "analysis_stringContains" + searchString + ".txt";
+        String analysisFile = directory + "analysis_stringContains_" + searchString + ".txt";
 
         try {
             FileWriter fileWriter = new FileWriter(analysisFile);
-            fileWriter.write(String.join(", ", linesFound + System.lineSeparator()));
+            fileWriter.write(String.join(System.lineSeparator() , linesToWrite));
             fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
