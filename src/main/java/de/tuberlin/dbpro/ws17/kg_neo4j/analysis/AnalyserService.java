@@ -13,29 +13,50 @@ import java.util.stream.Stream;
 public class AnalyserService {
 
 
-    public Set getIdentifiersFromFile(String startId, String pathToDataDir) {
-        Set<String> equalEntityIds = new HashSet<>();
-        //List<String> linesContainsStartIDAndSameAsProperty = fetchLinesContainingIDAndSameAsProperty(startId, pathToDataDir);
+    public Set getIdentifiersFromFile(Set<String> ids, String pathToDataDir) {
+        //Set<String> equalEntityIds = new HashSet<>();
+        List<String> linesContainsStartIDAndSameAsProperty = fetchLinesContainingIDAndSameAsProperty(ids, pathToDataDir);
 
         /*
             Test values to skip file reading
-         */
+
         List<String> linesContainsStartIDAndSameAsProperty = new LinkedList<>();
         linesContainsStartIDAndSameAsProperty.add("<http://corp.dbpedia.org/resource/gcd_f588>\t<http://www.w3.org/2002/07/owl#sameAs>\t<http://corp.dbpedia.org/resource/permid_4295868979>\t<http://dfki.gcd.de> .");
         linesContainsStartIDAndSameAsProperty.add("<http://corp.dbpedia.org/resource/permid_4295868979>\t<http://www.w3.org/2002/07/owl#sameAs>\t<http://corp.dbpedia.org/resource/gcd_f588>\t<http://permid.org> .");
         linesContainsStartIDAndSameAsProperty.add("<http://corp.dbpedia.org/resource/permid_4295868979>\t<http://www.w3.org/2002/07/owl#sameAs>\t<https://permid.org/1-4295868979>\t<http://permid.org> .");
         linesContainsStartIDAndSameAsProperty.add("<http://corp.dbpedia.org/resource/permid_4295868979>\t<http://www.w3.org/2002/07/owl#sameAs>\t<http://corp.dbpedia.org/resource/grid_425362_4>\t<http://permid.org> .");
+        */
+        /*
+        List<String> linesContainsStartIDAndSameAsProperty = new LinkedList<>();
+        linesContainsStartIDAndSameAsProperty.add("<http://corp.dbpedia.org/resource/gcd_40245>\t<http://www.w3.org/2002/07/owl#sameAs>\t<http://corp.dbpedia.org/resource/permid_4295870332>\t<http://dfki.gcd.de> .");
+        linesContainsStartIDAndSameAsProperty.add("<http://corp.dbpedia.org/resource/gcd_f48>\t<http://www.w3.org/2002/07/owl#sameAs>\t<http://corp.dbpedia.org/resource/permid_4295870332>\t<http://dfki.gcd.de> .");
+        linesContainsStartIDAndSameAsProperty.add("<http://corp.dbpedia.org/resource/permid_4295870332>	<http://www.w3.org/2002/07/owl#sameAs>	<http://corp.dbpedia.org/resource/gcd_40245>	<http://permid.org> .");
+        linesContainsStartIDAndSameAsProperty.add("<http://corp.dbpedia.org/resource/permid_4295870332>\t<http://www.w3.org/2002/07/owl#sameAs>\t<http://corp.dbpedia.org/resource/gcd_f48>\t<http://permid.org> .");
+        linesContainsStartIDAndSameAsProperty.add("<http://corp.dbpedia.org/resource/permid_4295870332>\t<http://www.w3.org/2002/07/owl#sameAs>\t<https://permid.org/1-4295870332>\t<http://permid.org> .");
+        */
 
         List<RDFEntity> rdfList = getRDFEntitiesFromLines(linesContainsStartIDAndSameAsProperty);
 
         rdfList.stream().forEach( rdfEntity ->
         {
-            equalEntityIds.add(rdfEntity.subject);
-            equalEntityIds.add(rdfEntity.object);
+            try {
+                //System.out.println(rdfEntity.subject);
+                //System.out.println(rdfEntity.object);
+                if(!rdfEntity.subject.contains("owl#sameAs")) {
+                    ids.add(rdfEntity.subject);
+                }
+                if(!rdfEntity.object.contains("owl#sameAs")) {
+                    ids.add(rdfEntity.object);
+                }
+
+            } catch (Exception e) {
+
+            }
+
 
         });
 
-        return equalEntityIds;
+        return ids;
     }
 
     public List getLinesContainingEntityIds(String pathToDataDir, Set<String> ids) {
@@ -43,8 +64,12 @@ public class AnalyserService {
         List<String> fileNames = getFilesInDirectory(pathToDataDir);
         System.out.println("Found " + fileNames.size() + " Files in given directory.");
         System.out.println("Full Path to first file: " + pathToDataDir + fileNames.get(0));
-        try {
-            for (String fileName : fileNames) {
+
+
+        String analysisFile = pathToDataDir + "analysis_equivalent_" + ids.iterator().next() + ".txt";
+
+        fileNames.stream().forEach(fileName -> {
+            try {
                 try (Stream<String> stream = Files.lines(Paths.get(pathToDataDir + fileName))) {
                     System.out.println("[" + fileName + "] analysing");
                     stream.parallel().forEach(line -> {
@@ -57,18 +82,12 @@ public class AnalyserService {
 
                     });
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-        }
-        String analysisFile = pathToDataDir + "analysis_stringContains_" + ids.iterator().next() + ".txt";
+        });
 
-        try {
-            FileWriter fileWriter = new FileWriter(analysisFile);
-            fileWriter.write(String.join(System.lineSeparator(), linesContainsID));
-            fileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
         return linesContainsID;
 
     }
@@ -79,7 +98,7 @@ public class AnalyserService {
         // <http://corp.dbpedia.org/resource/permid_4295868979>	<http://www.w3.org/2002/07/owl#sameAs>	<http://corp.dbpedia.org/resource/grid_425362_4>	<http://permid.org>
         linesContainsStartIDAndSameAsProperty.parallelStream().forEach(line ->
                 {
-                    System.out.println(line);
+                    //System.out.println(line);
                     Matcher matcher = pattern.matcher(line);
                     if(matcher.matches()) {
 
@@ -105,10 +124,10 @@ public class AnalyserService {
                         RDFEntity rdf = new RDFEntity(subjectId, predicateProperty, objectId, sourceValue);
                         rdfList.add(rdf);
 
-                        System.out.println(rdf);
+                        //System.out.println(rdf);
                     }
                     else {
-                        System.out.println("Unbhandeltes Format");
+                        System.out.println("Unbhandeltes Format: " + line);
                     }
 
                 }
@@ -118,25 +137,30 @@ public class AnalyserService {
     }
 
 
-    private List fetchLinesContainingIDAndSameAsProperty(String startId, String pathToDataDir) {
+    private List fetchLinesContainingIDAndSameAsProperty(Set<String> ids, String pathToDataDir) {
         List<String> linesContainsStartIDAndSameAsProperty = new ArrayList();
-        List<String> fileNames = getFilesInDirectory(pathToDataDir);
+        List<String> fileNames = getFilesInDirectory(pathToDataDir, "sameAs");
         System.out.println("Found " + fileNames.size() + " Files in given directory.");
         System.out.println("Full Path to first file: " + pathToDataDir + fileNames.get(0));
-        try {
-            for (String fileName : fileNames) {
+
+        fileNames.stream().forEach(fileName -> {
+            try {
                 try (Stream<String> stream = Files.lines(Paths.get(pathToDataDir + fileName))) {
                     System.out.println("[" + fileName + "] analysing");
                     stream.parallel().forEach(line -> {
-                        if (line.contains(startId) && line.contains("<http://www.w3.org/2002/07/owl#sameAs>")) {
-                            linesContainsStartIDAndSameAsProperty.add(fileName + "   " + line);
-                        }
+                        ids.parallelStream().forEach(id ->
+                        {
+                            if (line.contains(id) && line.contains("<http://www.w3.org/2002/07/owl#sameAs>") && !line.contains("rdf.freebase.com")) {
+                                linesContainsStartIDAndSameAsProperty.add(line);
+                            }
+                        });
                     });
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-        }
-        String analysisFile = pathToDataDir + "analysis_stringContains_" + startId + ".txt";
+        });
+        /*String analysisFile = pathToDataDir + "analysis_stringContains_" + ids.iterator().next() + ".txt";
 
         try {
             FileWriter fileWriter = new FileWriter(analysisFile);
@@ -145,14 +169,27 @@ public class AnalyserService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
         return linesContainsStartIDAndSameAsProperty;
+    }
+
+    public List getFilesInDirectory(String pathToDirectory, String type) {
+        List fileNames = new ArrayList();
+        File directory = new File(pathToDirectory);
+        for (final File fileEntry : directory.listFiles()) {
+            if(fileEntry.getName().contains(type)) {
+                fileNames.add(fileEntry.getName());
+            }
+        }
+        return fileNames;
+
     }
 
     public List getFilesInDirectory(String pathToDirectory) {
         List fileNames = new ArrayList();
         File directory = new File(pathToDirectory);
         for (final File fileEntry : directory.listFiles()) {
-            System.out.println(fileEntry.getName());
+            //System.out.println(fileEntry.getName());
             fileNames.add(fileEntry.getName());
         }
         return fileNames;
