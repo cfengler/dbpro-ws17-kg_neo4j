@@ -7,10 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -33,17 +30,17 @@ public class TransformatorService {
 
     private Map getAllPredicatesFromTransformedFile(String pathToDataDir, Map<String, Long> predicateCounter) {
         Map<String, String> predicateNamesIdentifiers = new HashMap();
-        String fileName = pathToDataDir + "predicateList.txt";
+        String fileName = "predicateList.txt";
 
             try (Stream<String> stream = Files.lines(Paths.get(pathToDataDir + fileName))) {
                 System.out.println("[" + fileName + "] loading");
-                stream.parallel().forEach(line -> {
+                stream.forEach(line -> {
                     {
                         String[] splittedLine = line.split("\t");
                         if(splittedLine.length == 3) {
                             String predicateProperty = splittedLine[0];
                             String predicateIdentifier = splittedLine[1];
-                            Long predicateCount = Long.getLong(splittedLine[3]);
+                            long predicateCount = Long.valueOf(splittedLine[2]);
 
                             predicateNamesIdentifiers.put(predicateProperty, predicateIdentifier);
                             predicateCounter.put(predicateProperty, predicateCount);
@@ -83,7 +80,7 @@ public class TransformatorService {
                             String predicate = splittedLine[1];
                             String[] splittedPredicate = predicate.split("/");
                             String predicateProperty = splittedPredicate[splittedPredicate.length - 1];
-                            predicateProperty = predicateProperty.substring(0, predicateProperty.length()-2);
+                            predicateProperty = predicateProperty.substring(0, predicateProperty.length()-1);
                             int size = predicateNamesIdentifiers.size();
                             predicateNamesIdentifiers.put(predicateProperty, predicate);
                             synchronized (this) {
@@ -114,20 +111,42 @@ public class TransformatorService {
                 e.printStackTrace();
             }
         });
-
         writePredicateMapToFile(predicateNamesIdentifiers, predicateCounter, predicateFilePath);
 
         return predicateNamesIdentifiers;
     }
 
     public void createOrderedFileStructure(String pathToDataDir, Map<String, String> predicateNamesIdentifiers, Map<String, Long> predicateCounter) {
+
+        predicateNamesIdentifiers = sortPredicateMap(predicateNamesIdentifiers, predicateCounter);
         predicateNamesIdentifiers.entrySet().stream().forEach((p) ->
         {
             if(predicateCounter.get(p.getKey()) > 1000) {
                 System.out.println("Creating extra file for predicate " + p.getKey() + " with " + predicateCounter.get(p.getKey()) + " occurrences");
                 createFileContainsOnlyPredicate(pathToDataDir, p.getKey(), p.getValue());
             }
+            else {
+                // TODO: Andere in eine Datei schreiben?
+            }
         });
+    }
+
+    public Map<String, String> sortPredicateMap(Map<String, String> predicateNamesIdentifiers, Map<String, Long> predicateCounter) {
+        List<Map.Entry<String, String>> list = new LinkedList<>(predicateNamesIdentifiers.entrySet());
+        Collections.sort(list, new Comparator<Map.Entry<String, String>>() {
+            @Override
+            public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
+                if(predicateCounter.get(o1.getKey()) < predicateCounter.get(o1.getKey())) return -1;
+                else if(predicateCounter.get(o1.getKey()) > predicateCounter.get(o1.getKey())) return 1;
+                else return 0;
+            }
+        });
+
+        predicateNamesIdentifiers = new LinkedHashMap<>();
+        for (Map.Entry<String, String> entry : list) {
+            predicateNamesIdentifiers.put(entry.getKey(), entry.getValue());
+        }
+        return predicateNamesIdentifiers;
     }
 
 
