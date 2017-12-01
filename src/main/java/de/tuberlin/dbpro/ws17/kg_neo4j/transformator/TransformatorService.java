@@ -118,17 +118,22 @@ public class TransformatorService {
 
     public void createOrderedFileStructure(String pathToDataDir, Map<String, String> predicateNamesIdentifiers, Map<String, Long> predicateCounter) {
 
-        predicateNamesIdentifiers = sortPredicateMap(predicateNamesIdentifiers, predicateCounter);
-        predicateNamesIdentifiers.entrySet().stream().forEach((p) ->
-        {
-            if(predicateCounter.get(p.getKey()) > 1000) {
-                System.out.println("Creating extra file for predicate " + p.getKey() + " with " + predicateCounter.get(p.getKey()) + " occurrences");
-                createFileContainsOnlyPredicate(pathToDataDir, p.getKey(), p.getValue());
-            }
-            else {
-                // TODO: Andere in eine Datei schreiben?
-            }
-        });
+        //predicateNamesIdentifiers = sortPredicateMap(predicateNamesIdentifiers, predicateCounter);
+
+        predicateCounter.entrySet().stream().sorted((k1, k2) -> -k1.getValue().compareTo(k2.getValue()))
+                .forEach(p -> {
+                    if(predicateCounter.get(p.getKey()) > 1000) {
+                        System.out.println(p.getKey() + ": " + p.getValue());
+                        System.out.println("Creating extra file for predicate " + p.getKey() + " with " + p.getValue() + " occurrences");
+                        createFileContainsOnlyPredicate(pathToDataDir, p.getKey(), predicateNamesIdentifiers.get(p.getKey()));
+                    }
+                    else {
+                        // TODO: Andere in eine Datei schreiben?
+                    }
+                });
+
+
+
     }
 
     public Map<String, String> sortPredicateMap(Map<String, String> predicateNamesIdentifiers, Map<String, Long> predicateCounter) {
