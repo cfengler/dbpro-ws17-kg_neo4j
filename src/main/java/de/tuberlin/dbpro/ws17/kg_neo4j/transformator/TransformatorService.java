@@ -19,21 +19,55 @@ public class TransformatorService {
 
     public void createListOfAllAvailableObjects(String pathToDataDir) {
 
+        Map<String, Long> predicateCounter = new HashMap<>();
         Map<String, String> predicateNamesIdentifiers;
         // TODO: File exists -> load from file
-        if(true) {
-            predicateNamesIdentifiers = getAllPredicates(pathToDataDir);
+        if(Files.exists(Paths.get(pathToDataDir + "predicateList.txt"))) {
+            predicateNamesIdentifiers = getAllPredicatesFromTransformedFile(pathToDataDir, predicateCounter);
         }
-        createOrderedFileStructure(pathToDataDir, predicateNamesIdentifiers);
+        else {
+            predicateNamesIdentifiers = getAllPredicates(pathToDataDir, predicateCounter);
+        }
+        createOrderedFileStructure(pathToDataDir, predicateNamesIdentifiers, predicateCounter);
     }
 
-    private Map getAllPredicates(String pathToDataDir) {
+    private Map getAllPredicatesFromTransformedFile(String pathToDataDir, Map<String, Long> predicateCounter) {
+        Map<String, String> predicateNamesIdentifiers = new HashMap();
+        String fileName = pathToDataDir + "predicateList.txt";
+
+            try (Stream<String> stream = Files.lines(Paths.get(pathToDataDir + fileName))) {
+                System.out.println("[" + fileName + "] loading");
+                stream.parallel().forEach(line -> {
+                    {
+                        String[] splittedLine = line.split("\t");
+                        if(splittedLine.length == 3) {
+                            String predicateProperty = splittedLine[0];
+                            String predicateIdentifier = splittedLine[1];
+                            Long predicateCount = Long.getLong(splittedLine[3]);
+
+                            predicateNamesIdentifiers.put(predicateProperty, predicateIdentifier);
+                            predicateCounter.put(predicateProperty, predicateCount);
+                        }
+                        else {
+                            predicateNamesIdentifiers.put("unbehandeltesFormat", line);
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        return predicateNamesIdentifiers;
+    }
+
+    private Map getAllPredicates(String pathToDataDir, Map<String, Long> predicateCounter) {
         Map<String, String> predicateNamesIdentifiers = new HashMap();
 
         Pattern pattern = Pattern.compile("[<](?<subject>.+?)[>]\\s[<](?<predicate>.+?)[>]\\s[<](?<object>.+?)[>]\\s[<](?<source>.+?)[>]\\s.");
         // <http://corp.dbpedia.org/resource/permid_4295868979>	<http://www.w3.org/2002/07/owl#sameAs>	<http://corp.dbpedia.org/resource/grid_425362_4>	<http://permid.org>
 
         List<String> fileNames = getFilesInDirectory(pathToDataDir);
+
         System.out.println("Found " + fileNames.size() + " Files in given directory.");
         System.out.println("Full Path to first file: " + pathToDataDir + fileNames.get(0));
 
@@ -52,8 +86,14 @@ public class TransformatorService {
                             predicateProperty = predicateProperty.substring(0, predicateProperty.length()-2);
                             int size = predicateNamesIdentifiers.size();
                             predicateNamesIdentifiers.put(predicateProperty, predicate);
-                            if(predicateNamesIdentifiers.size() > size) {
-                                System.out.println(predicateProperty + " : " + predicate);
+                            synchronized (this) {
+                                if(predicateNamesIdentifiers.size() > size) {
+                                    System.out.println(predicateProperty + " : " + predicate);
+                                    predicateCounter.put(predicateProperty, 1L);
+                                }
+                                else {
+                                    predicateCounter.put(predicateProperty, predicateCounter.get(predicateProperty)+1);
+                                }
                             }
 
                         }
@@ -61,22 +101,9 @@ public class TransformatorService {
                             predicateNamesIdentifiers.put("unbehandeltesFormat", line);
                         }
 
-
-                        //System.out.println(line);
-                        /*
-                        Matcher matcher = pattern.matcher(line);
-                        if (matcher.matches()) {
-                            String predicate = matcher.group("predicate");
-                            String[] splittedPredicate = predicate.split("/");
-                            String predicateProperty = splittedPredicate[splittedPredicate.length - 1];
-                            predicateNamesIdentifiers.put(predicateProperty, predicate);
-                        } else {
-                            predicateNamesIdentifiers.put("unbehandeltesFormat", line);
-                        }
-                        */
                         synchronized (this) {
-                            if (predicateNamesIdentifiers.size() > 100) {
-                                writeMapToFile(predicateNamesIdentifiers, predicateFilePath);
+                            if (predicateNamesIdentifiers.size() > 100000) {
+                                writePredicateMapToFile(predicateNamesIdentifiers, predicateCounter, predicateFilePath);
                                 predicateNamesIdentifiers.clear();
                             }
                         }
@@ -88,15 +115,18 @@ public class TransformatorService {
             }
         });
 
-        writeMapToFile(predicateNamesIdentifiers, predicateFilePath);
+        writePredicateMapToFile(predicateNamesIdentifiers, predicateCounter, predicateFilePath);
 
         return predicateNamesIdentifiers;
     }
 
-    public void createOrderedFileStructure(String pathToDataDir, Map<String, String> predicateNamesIdentifiers) {
+    public void createOrderedFileStructure(String pathToDataDir, Map<String, String> predicateNamesIdentifiers, Map<String, Long> predicateCounter) {
         predicateNamesIdentifiers.entrySet().stream().forEach((p) ->
         {
-            createFileContainsOnlyPredicate(pathToDataDir, p.getKey(), p.getValue());
+            if(predicateCounter.get(p.getKey()) > 1000) {
+                System.out.println("Creating extra file for predicate " + p.getKey() + " with " + predicateCounter.get(p.getKey()) + " occurrences");
+                createFileContainsOnlyPredicate(pathToDataDir, p.getKey(), p.getValue());
+            }
         });
     }
 
@@ -147,6 +177,23 @@ public class TransformatorService {
         try {
             FileWriter fileWriter = new FileWriter(filePath, true);
             fileWriter.append(lines.toString());
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public synchronized void writePredicateMapToFile(Map<String, String> map, Map<String, Long> predicateCounter, String filePath) {
+        try {
+            FileWriter fileWriter = new FileWriter(filePath, true);
+            map.entrySet().stream().forEach((p) ->
+            {
+                try {
+                    fileWriter.append(p.getKey() + "\t" + p.getValue() + "\t" + predicateCounter.get(p.getKey()) + "\n");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
             fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
