@@ -5,6 +5,7 @@ import de.tuberlin.dbpro.ws17.kg_neo4j.analysis.RDFEntity;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.management.GarbageCollectorMXBean;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -116,10 +117,78 @@ public class TransformatorService {
         return predicateNamesIdentifiers;
     }
 
+    private void splitPredicatesInSeperateFiles(String pathToDataDir, Map<String, Long> predicateCounter) {
+
+        Map<String, StringBuffer> predicteTypeLinesMap = new HashMap<>();
+
+        List<String> fileNames = getFilesInDirectory(pathToDataDir);
+
+        System.out.println("Found " + fileNames.size() + " Files in given directory.");
+        System.out.println("Full Path to first file: " + pathToDataDir + fileNames.get(0));
+
+        final long[] size = {0};
+        fileNames.stream().forEach(fileName -> {
+            try (Stream<String> stream = Files.lines(Paths.get(pathToDataDir + fileName))) {
+                System.out.println("[" + fileName + "] analysing");
+                stream.forEach(line -> {
+                    {
+
+                        String[] splittedLine = line.split("\t");
+
+                        if(splittedLine.length == 4) {
+
+                            String predicate = splittedLine[1];
+                            String[] splittedPredicate = predicate.split("/");
+                            String predicateProperty = splittedPredicate[splittedPredicate.length - 1];
+                            predicateProperty = predicateProperty.substring(0, predicateProperty.length()-1);
+
+                            if(predicateCounter.get(predicateProperty) <= 1000) {
+                                appendPredicateToPredicateFile(line + "\n", pathToDataDir + "restPredicateList.txt");
+                            }
+                            else {
+                                if(!predicteTypeLinesMap.containsKey(predicateProperty)) {
+                                    predicteTypeLinesMap.put(predicateProperty, new StringBuffer());
+                                }
+                                predicteTypeLinesMap.put(predicateProperty, predicteTypeLinesMap.get(predicateProperty).append(line + "\n"));
+                                size[0] += line.length();
+
+                                //if(Runtime.getRuntime().totalMemory() >= (Runtime.getRuntime().maxMemory() * 0.8) ) {
+                                if(size[0]*4 >= 1000000000) {
+                                    appendPredicateMapToPredicateFile(predicteTypeLinesMap, pathToDataDir);
+                                /*
+                                predicteTypeLinesMap.entrySet().stream().forEach(p ->
+                                {
+                                    predicteTypeLinesMap.put(p.getKey(),new StringBuffer());
+                                });
+                                */
+                                    predicteTypeLinesMap.clear();
+                                    size[0] = 0;
+
+                                }
+                            }
+                        }
+                        else {
+                            appendPredicateToPredicateFile(line + "\n", pathToDataDir + "unbehandeltesFormat.txt");
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        appendPredicateMapToPredicateFile(predicteTypeLinesMap, pathToDataDir);
+    }
+
+
+
     public void createOrderedFileStructure(String pathToDataDir, Map<String, String> predicateNamesIdentifiers, Map<String, Long> predicateCounter) {
+
+
+        splitPredicatesInSeperateFiles(pathToDataDir, predicateCounter);
 
         //predicateNamesIdentifiers = sortPredicateMap(predicateNamesIdentifiers, predicateCounter);
 
+        /*
         predicateCounter.entrySet().stream().sorted((k1, k2) -> -k1.getValue().compareTo(k2.getValue()))
                 .forEach(p -> {
                     if(predicateCounter.get(p.getKey()) > 1000) {
@@ -131,6 +200,7 @@ public class TransformatorService {
                         // TODO: Andere in eine Datei schreiben?
                     }
                 });
+        */
 
 
 
@@ -196,6 +266,32 @@ public class TransformatorService {
     }
 
 
+    public synchronized void appendPredicateToPredicateFile(String line, String filePath) {
+        try {
+            FileWriter fileWriter = new FileWriter(filePath, true);
+            fileWriter.append(line);
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private synchronized void appendPredicateMapToPredicateFile(Map<String, StringBuffer> predicteTypeLinesMap, String pathToDir) {
+        predicteTypeLinesMap.entrySet().stream().forEach((p) ->
+        {
+            FileWriter fileWriter = null;
+            try {
+
+                fileWriter = new FileWriter(pathToDir + p.getKey() + ".txt", true);
+                fileWriter.append(p.getValue());
+                p.getValue().setLength(0);
+                //System.gc();
+                fileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
     public synchronized void writeListToFile(StringBuffer lines, String filePath) {
         try {
