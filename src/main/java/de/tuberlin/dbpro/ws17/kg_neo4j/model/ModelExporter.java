@@ -1,6 +1,6 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.model;
 
-import de.tuberlin.dbpro.ws17.kg_neo4j.analysis.RdfEntity;
+import de.tuberlin.dbpro.ws17.kg_neo4j.analysis.RDFEntity;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -55,12 +55,12 @@ public class ModelExporter {
     private static void processLineWith_id_permid(Company company, String line) {
         if (line.contains("<http://www.w3.org/2004/02/skos/core#prefLabel>")) {
             //Bezeichnung
-            RdfEntity rdfEntity = new RdfEntity(line);
+            RDFEntity rdfEntity = new RDFEntity(line);
             company.names.add(rdfEntity.object);
         }
         else if (line.contains("<http://www.w3.org/ns/prov#startedAtTime>")) {
             //Gründung
-            RdfEntity rdfEntity = new RdfEntity(line);
+            RDFEntity rdfEntity = new RDFEntity(line);
             if (company.founding == null) {
                 company.founding = rdfEntity.object;
             }
@@ -70,7 +70,7 @@ public class ModelExporter {
         }
         else if (line.contains("<http://corp.dbpedia.org/resource/" + company.id_permid + "_headquarterSite>")) {
             //Hauptsitz
-            RdfEntity rdfEntity = new RdfEntity(line);
+            RDFEntity rdfEntity = new RDFEntity(line);
             if (company.headquarterSite == null) {
                 company.headquarterSite = rdfEntity.object;
             }
@@ -80,7 +80,7 @@ public class ModelExporter {
         }
         else if (line.contains("<http://corp.dbpedia.org/resource/" + company.id_permid + "_registeredSite>")) {
             //juristischer Sitz
-            RdfEntity rdfEntity = new RdfEntity(line);
+            RDFEntity rdfEntity = new RDFEntity(line);
             if (company.registeredSite == null) {
                 company.registeredSite = rdfEntity.object;
             }
@@ -98,7 +98,7 @@ public class ModelExporter {
 
     private static void processLineWith_id_gcd(Company company, String line) {
         if (line.contains("<http://www.w3.org/2004/02/skos/core#prefLabel>")) {
-            RdfEntity rdfEntity = new RdfEntity(line);
+            RDFEntity rdfEntity = new RDFEntity(line);
             company.names.add(rdfEntity.object);
         }
         else {

@@ -1,15 +1,11 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.transformator;
 
-import de.tuberlin.dbpro.ws17.kg_neo4j.analysis.RDFEntity;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.management.GarbageCollectorMXBean;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -142,7 +138,7 @@ public class TransformatorService {
                             String predicateProperty = splittedPredicate[splittedPredicate.length - 1];
                             predicateProperty = predicateProperty.substring(0, predicateProperty.length()-1);
 
-                            if(predicateCounter.get(predicateProperty) <= 1000) {
+                            if(predicateCounter.get(predicateProperty) <= 5000) {
                                 appendPredicateToPredicateFile(line + "\n", pathToDataDir + "restPredicateList.txt");
                             }
                             else {
@@ -152,8 +148,8 @@ public class TransformatorService {
                                 predicteTypeLinesMap.put(predicateProperty, predicteTypeLinesMap.get(predicateProperty).append(line + "\n"));
                                 size[0] += line.length();
 
-                                //if(Runtime.getRuntime().totalMemory() >= (Runtime.getRuntime().maxMemory() * 0.8) ) {
-                                if(size[0]*4 >= 1000000000) {
+                                //if(Runtime.getRuntime().totalMemory() >= Runtime.getRuntime().maxMemory() - 1000000000L ) {
+                                if(size[0] >= 1000000000L) {
                                     appendPredicateMapToPredicateFile(predicteTypeLinesMap, pathToDataDir);
                                 /*
                                 predicteTypeLinesMap.entrySet().stream().forEach(p ->
