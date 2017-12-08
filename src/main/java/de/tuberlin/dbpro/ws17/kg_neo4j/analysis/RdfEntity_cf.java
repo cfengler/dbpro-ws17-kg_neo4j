@@ -1,13 +1,13 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.analysis;
 
-public class RDFEntity {
+public class RdfEntity_cf {
     public String fileName;
     public String subject;
     public String predicate;
     public String object;
     public String source;
 
-    public RDFEntity(String fileNamePluslineOfFileTabSeperated) {
+    public RdfEntity_cf(String fileNamePluslineOfFileTabSeperated) {
 
         String[] split = fileNamePluslineOfFileTabSeperated.split("\t");
 

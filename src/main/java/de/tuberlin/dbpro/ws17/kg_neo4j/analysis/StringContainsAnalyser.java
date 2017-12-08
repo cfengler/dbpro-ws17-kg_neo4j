@@ -68,10 +68,10 @@ public class StringContainsAnalyser {
     private static List<String> getSortedLines(List<String> lines) {
         List<String> result = new ArrayList<>();
 
-        List<RDFEntity> rdfEntries = new ArrayList<>();
+        List<RdfEntity_cf> rdfEntries = new ArrayList<>();
 
         for (String line:lines) {
-            rdfEntries.add(new RDFEntity(line));
+            rdfEntries.add(new RdfEntity_cf(line));
         }
 
         rdfEntries.sort((o1, o2) ->  {
@@ -79,7 +79,7 @@ public class StringContainsAnalyser {
             return compareResult;
         });
 
-        for (RDFEntity rdfEntry:rdfEntries) {
+        for (RdfEntity_cf rdfEntry:rdfEntries) {
             result.add(rdfEntry.toString());
         }
 
