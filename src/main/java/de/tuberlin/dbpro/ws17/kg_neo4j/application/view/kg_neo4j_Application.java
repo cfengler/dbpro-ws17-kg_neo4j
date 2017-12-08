@@ -1,4 +1,4 @@
-package de.tuberlin.dbpro.ws17.kg_neo4j.application;
+package de.tuberlin.dbpro.ws17.kg_neo4j.application.view;
 
 import de.tuberlin.dbpro.ws17.kg_neo4j.importation.SmartDataWebImporter;
 import javafx.application.Application;

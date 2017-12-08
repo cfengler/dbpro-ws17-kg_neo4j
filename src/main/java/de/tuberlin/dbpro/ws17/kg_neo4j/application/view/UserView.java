@@ -1,5 +1,8 @@
-package de.tuberlin.dbpro.ws17.kg_neo4j.application;
+package de.tuberlin.dbpro.ws17.kg_neo4j.application.view;
 
+import de.tuberlin.dbpro.ws17.kg_neo4j.application.Layout;
+import de.tuberlin.dbpro.ws17.kg_neo4j.application.MainNeighbourLayout;
+import de.tuberlin.dbpro.ws17.kg_neo4j.application.viewmodel.GraphViewModel;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -19,7 +22,7 @@ import javafx.stage.Stage;
 import javax.swing.*;
 import java.util.ArrayList;
 
-public class User_Application extends Application {
+public class UserView extends Application {
 
     private static final BorderPane pnFoundation = new BorderPane();
     private static final GridPane pnSearch = new GridPane();
@@ -44,11 +47,24 @@ public class User_Application extends Application {
     private static final RadioButton rbEdges = new RadioButton();
     private static final ToggleGroup tgSearch = new ToggleGroup();
 
+    private static final String fontname = "Helvetica Neue";
+
     public void start(Stage primaryStage) {
         primaryStage.setTitle("DBPRO");
 
         initSearch();
         initSelection();
+
+        //Beispiel Graph anlegen Anfang
+        GraphViewModel graph = new GraphViewModel();
+
+        pnFoundation.setCenter(graph.getScrollPane());
+
+        //hier muss der Graph gefüllt werden
+
+        Layout layout = new MainNeighbourLayout(graph);
+        layout.execute();
+        //Beispiel Ende
 
         primaryStage.setScene(new Scene(pnFoundation, 1000, 500));
         primaryStage.show();
@@ -84,7 +100,7 @@ public class User_Application extends Application {
 
         //Suchbutton
         btnSearch.setText("suchen");
-        btnSearch.setFont(new Font("Helvetica Neue", 13));
+        btnSearch.setFont(new Font(fontname, 13));
         btnSearch.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -121,7 +137,7 @@ public class User_Application extends Application {
 
         //Ueberschrift
         lblSelection.setText("Auswahl");
-        lblSelection.setFont(new Font("Helvetica Neue", 20));
+        lblSelection.setFont(new Font(fontname, 20));
         pnSelectionHeadline.setTop(lblSelection);
 
         //Pane mit Auswahlmoeglichkeiten
@@ -131,7 +147,7 @@ public class User_Application extends Application {
 
         //Pane nach Auswahl
         btnSelectionReturn.setText("<- zurück");
-        btnSelectionReturn.setFont(new Font("Helvetica Neue", 13));
+        btnSelectionReturn.setFont(new Font(fontname, 13));
         pnSelectionReturn.setSpacing(5);
         btnSelectionReturn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
