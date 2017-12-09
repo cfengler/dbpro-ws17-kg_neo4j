@@ -23,6 +23,10 @@ public class RDFEntity {
         this.source = split[3];
     }
 
+    public RDFEntity(String s1, String s2, String s3, String s4) {
+
+    }
+
     public String toString() {
         return fileName + "\t" + subject + "\t" + predicate + "\t" + object + "\t" + source;
     }
