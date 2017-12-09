@@ -2,6 +2,8 @@ package de.tuberlin.dbpro.ws17.kg_neo4j.application.view;
 
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.Layout;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.MainNeighbourLayout;
+import de.tuberlin.dbpro.ws17.kg_neo4j.application.Model;
+import de.tuberlin.dbpro.ws17.kg_neo4j.application.viewmodel.CellTypeViewModel;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.viewmodel.GraphViewModel;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -60,7 +62,29 @@ public class UserView extends Application {
 
         pnFoundation.setCenter(graph.getScrollPane());
 
-        //hier muss der Graph gefüllt werden
+        //Testdaten Anfang
+        Model model = graph.getModel();
+
+        graph.beginUpdate();
+
+        model.addCell("Cell A", CellTypeViewModel.MAIN);
+        model.addCell("Cell B", CellTypeViewModel.MAIN);
+        model.addCell("Cell C", CellTypeViewModel.MAIN);
+        model.addCell("Cell D", CellTypeViewModel.NEIGHBOUR);
+        model.addCell("Cell E", CellTypeViewModel.NEIGHBOUR);
+        model.addCell("Cell F", CellTypeViewModel.MAIN);
+        model.addCell("Cell G", CellTypeViewModel.MAIN);
+
+        model.addEdge("Cell A", "Cell B");
+        model.addEdge("Cell A", "Cell C");
+        model.addEdge("Cell B", "Cell C");
+        model.addEdge("Cell C", "Cell D");
+        model.addEdge("Cell B", "Cell E");
+        model.addEdge("Cell D", "Cell F");
+        model.addEdge("Cell D", "Cell G");
+
+        graph.endUpdate();
+        //Testdaten Ende
 
         Layout layout = new MainNeighbourLayout(graph);
         layout.execute();
