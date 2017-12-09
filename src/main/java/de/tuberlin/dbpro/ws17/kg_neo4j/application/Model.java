@@ -23,7 +23,7 @@ public class Model {
 
     public Model() {
 
-        graphParent = new CellViewModel( "_ROOT_");
+        graphParent = new CellViewModel( "_ROOT_", CellTypeViewModel.MAIN);
 
         // clear model, create lists
         clear();
@@ -77,12 +77,12 @@ public class Model {
         switch (type) {
 
             case MAIN:
-                MainCellViewModel rectangleCell = new MainCellViewModel(id);
+                MainCellViewModel rectangleCell = new MainCellViewModel(id, type);
                 addCell(rectangleCell);
                 break;
 
             case NEIGHBOUR:
-                NeighbourCellViewModel circleCell = new NeighbourCellViewModel(id);
+                NeighbourCellViewModel circleCell = new NeighbourCellViewModel(id, type);
                 addCell(circleCell);
                 break;
 

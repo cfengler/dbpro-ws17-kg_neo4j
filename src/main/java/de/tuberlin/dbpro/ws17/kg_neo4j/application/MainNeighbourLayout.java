@@ -21,10 +21,38 @@ public class MainNeighbourLayout extends Layout {
 
         List<CellViewModel> cells = graph.getModel().getAllCells();
 
+        int numberNeighbours = 0;
+        double length = 200.0;
+
+        for (CellViewModel cell : cells) {
+            if(cell.getCellType() == CellTypeViewModel.NEIGHBOUR) {
+                numberNeighbours++;
+            }
+        }
+
+        int indexNeighbour = 0;
+
         for (CellViewModel cell : cells) {
 
-            double x = rnd.nextDouble() * 500;
-            double y = rnd.nextDouble() * 500;
+            double x;
+            double y;
+
+            switch(cell.getCellType()) {
+                case MAIN:
+                    x = 250;
+                    y = 250;
+                    break;
+                case NEIGHBOUR:
+                    double rad = Math.toRadians(((double)indexNeighbour / (double)numberNeighbours) * 360.0);
+                    x = 250 + Math.sin(rad) * length;
+                    y = 250 + Math.cos(rad) * length;
+                    indexNeighbour++;
+                    break;
+                default:
+                    x = 0.0;
+                    y = 0.0;
+                    break;
+            }
 
             cell.relocate(x, y);
 

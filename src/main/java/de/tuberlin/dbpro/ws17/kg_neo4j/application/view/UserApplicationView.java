@@ -2,6 +2,7 @@ package de.tuberlin.dbpro.ws17.kg_neo4j.application.view;
 
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.Layout;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.MainNeighbourLayout;
+import de.tuberlin.dbpro.ws17.kg_neo4j.application.RandomLayout;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.Model;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.viewmodel.CellTypeViewModel;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.viewmodel.GraphViewModel;
@@ -21,10 +22,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-import javax.swing.*;
-import java.util.ArrayList;
-
-public class UserView extends Application {
+public class UserApplicationView extends Application {
 
     private static final BorderPane pnFoundation = new BorderPane();
     private static final GridPane pnSearch = new GridPane();
@@ -68,24 +66,24 @@ public class UserView extends Application {
         graph.beginUpdate();
 
         model.addCell("Cell A", CellTypeViewModel.MAIN);
-        model.addCell("Cell B", CellTypeViewModel.MAIN);
-        model.addCell("Cell C", CellTypeViewModel.MAIN);
+        model.addCell("Cell B", CellTypeViewModel.NEIGHBOUR);
+        model.addCell("Cell C", CellTypeViewModel.NEIGHBOUR);
         model.addCell("Cell D", CellTypeViewModel.NEIGHBOUR);
         model.addCell("Cell E", CellTypeViewModel.NEIGHBOUR);
-        model.addCell("Cell F", CellTypeViewModel.MAIN);
-        model.addCell("Cell G", CellTypeViewModel.MAIN);
+        model.addCell("Cell F", CellTypeViewModel.NEIGHBOUR);
+        model.addCell("Cell G", CellTypeViewModel.NEIGHBOUR);
 
         model.addEdge("Cell A", "Cell B");
         model.addEdge("Cell A", "Cell C");
-        model.addEdge("Cell B", "Cell C");
-        model.addEdge("Cell C", "Cell D");
-        model.addEdge("Cell B", "Cell E");
-        model.addEdge("Cell D", "Cell F");
-        model.addEdge("Cell D", "Cell G");
+        model.addEdge("Cell A", "Cell D");
+        model.addEdge("Cell A", "Cell E");
+        model.addEdge("Cell A", "Cell F");
+        model.addEdge("Cell A", "Cell G");
 
         graph.endUpdate();
         //Testdaten Ende
 
+        //Layout layout = new RandomLayout(graph);
         Layout layout = new MainNeighbourLayout(graph);
         layout.execute();
         //Beispiel Ende

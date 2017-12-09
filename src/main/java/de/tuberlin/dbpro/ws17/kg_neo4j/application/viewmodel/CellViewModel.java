@@ -8,15 +8,18 @@ import javafx.scene.layout.Pane;
 
 public class CellViewModel extends Pane {
 
-    String cellId;
+    private String cellId;
 
-    List<CellViewModel> children = new ArrayList<>();
-    List<CellViewModel> parents = new ArrayList<>();
+    private CellTypeViewModel cellType;
+
+    private List<CellViewModel> children = new ArrayList<>();
+    private List<CellViewModel> parents = new ArrayList<>();
 
     Node view;
 
-    public CellViewModel(String cellId) {
+    public CellViewModel(String cellId, CellTypeViewModel cellType) {
         this.cellId = cellId;
+        this.cellType = cellType;
     }
 
     public void addCellChild(CellViewModel cell) {
@@ -37,6 +40,10 @@ public class CellViewModel extends Pane {
 
     public void removeCellChild(CellViewModel cell) {
         children.remove(cell);
+    }
+
+    public CellTypeViewModel getCellType() {
+        return cellType;
     }
 
     public void setView(Node view) {
