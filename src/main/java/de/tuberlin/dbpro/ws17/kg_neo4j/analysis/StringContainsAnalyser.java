@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 public class StringContainsAnalyser {
 
     private static List<String> searchStrings = Arrays.asList(
-        "<http://www.w3.org/ns/adms#identifier>");
+        "RA-MICRO");
         //"<http://corp.dbpedia.org/resource/permid_5040791276>",
         //"<http://rdf.freebase.com/ns/m.0nbs2_2>",
         //"<http://rdf.freebase.com/ns/m.0p4wb>",
@@ -45,7 +45,6 @@ public class StringContainsAnalyser {
 
     private static List<String> findLinesWithSearchString(List<String> fileNames, String searchString) {
         List<String> result = new ArrayList<>();
-
         try {
             for (String fileName : fileNames) {
                 System.out.println(fileName);
