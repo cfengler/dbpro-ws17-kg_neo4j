@@ -81,36 +81,7 @@ public class SmartDataWebTransformator {
 
     private static void removeAllPredicatesWithLessThen5000Entries(Map<String, Integer> allPredicates) {
         allPredicates.entrySet().removeIf(entry -> entry.getValue() < 5000);
-//        for(Iterator<Map.Entry<String, Integer>> iterator = allPredicates.entrySet().iterator(); iterator.hasNext(); ) {
-//            Map.Entry<String, Integer> entry = iterator.next();
-//            if(entry.getValue() < 5000) {
-//                iterator.remove();
-//            }
-//        }
     }
-
-    //    private static void somachtmandas() {
-    //        FileWriter fw = null;
-    //        Map<String, FileWriter> map = new HashMap<>();
-    //        while (data.hasNextLine()) {
-    //            String line = data.nextLine();
-    //            String[] split = line.split("\t");
-    //            String filename = "D:\\P&G\\March Sample Data\\" + split[0] + " "
-    //                + split[1] + ".txt";
-    //            // System.out.println((filename));
-    //            // System.out.println(line);
-    //            if (map.containsKey(filename)) {
-    //                fw = map.get(filename);
-    //            } else {
-    //                fw = new FileWriter(filename, true);
-    //                map.put(filename, fw);
-    //            }
-    //            // ...
-    //        }
-    //        for (FileWriter file : map.values()) {
-    //            file.close();
-    //        }
-    //    }
 
     private static Map<String, FileWriter> getFileWriterByPredicate(Map<String, Integer> allPredicates) {
         Map<String, FileWriter> result = new HashMap<>();

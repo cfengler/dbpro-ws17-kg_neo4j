@@ -1,7 +1,6 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.analysis;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -35,7 +34,7 @@ public class AnalyserService {
         linesContainsStartIDAndSameAsProperty.add("<http://corp.dbpedia.org/resource/permid_4295870332>\t<http://www.w3.org/2002/07/owl#sameAs>\t<https://permid.org/1-4295870332>\t<http://permid.org> .");
         */
 
-        List<RDFEntity> rdfList = getRDFEntitiesFromLines(linesContainsStartIDAndSameAsProperty);
+        List<RdfEntity> rdfList = getRDFEntitiesFromLines(linesContainsStartIDAndSameAsProperty);
 
         rdfList.stream().forEach( rdfEntity ->
         {
@@ -93,7 +92,7 @@ public class AnalyserService {
     }
 
     private List getRDFEntitiesFromLines(List<String> linesContainsStartIDAndSameAsProperty) {
-        List<RDFEntity> rdfList = new ArrayList<>();
+        List<RdfEntity> rdfList = new ArrayList<>();
         Pattern pattern = Pattern.compile("[<](?<subject>.+?)[>]\\s[<](?<predicate>.+?)[>]\\s[<](?<object>.+?)[>]\\s[<](?<source>.+?)[>]\\s.");
         // <http://corp.dbpedia.org/resource/permid_4295868979>	<http://www.w3.org/2002/07/owl#sameAs>	<http://corp.dbpedia.org/resource/grid_425362_4>	<http://permid.org>
         linesContainsStartIDAndSameAsProperty.parallelStream().forEach(line ->
@@ -121,7 +120,7 @@ public class AnalyserService {
                         String source = matcher.group("source");
                         String[] splittedSource = source.split("/");
                         String sourceValue = splittedSource[splittedSource.length-1];
-                        RDFEntity rdf = new RDFEntity(subjectId, predicateProperty, objectId, sourceValue);
+                        RdfEntity rdf = new RdfEntity(subjectId, predicateProperty, objectId, sourceValue);
                         rdfList.add(rdf);
 
                         //System.out.println(rdf);
