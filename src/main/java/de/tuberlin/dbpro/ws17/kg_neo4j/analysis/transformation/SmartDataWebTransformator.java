@@ -1,4 +1,4 @@
-package de.tuberlin.dbpro.ws17.kg_neo4j.transformation;
+package de.tuberlin.dbpro.ws17.kg_neo4j.analysis.transformation;
 
 import org.apache.commons.text.StringEscapeUtils;
 

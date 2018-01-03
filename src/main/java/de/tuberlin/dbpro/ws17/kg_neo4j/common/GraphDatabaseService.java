@@ -13,8 +13,9 @@ public class GraphDatabaseService implements Closeable {
     private Driver driver = null;
     private Session session = null;
 
+
     public GraphDatabaseService() {
-        driver = GraphDatabase.driver("bolt://localhost:7687");
+        driver = GraphDatabase.driver("bolt://win.roschy.net:7687");
         session = driver.session();
     }
 
@@ -162,7 +163,7 @@ public class GraphDatabaseService implements Closeable {
         return result;
     }
 
-    public void deleteAllEntities(boolean reallyWantToDoThis) {
+    public void deleteAllNodesAndRelations(boolean reallyWantToDoThis) {
         if (reallyWantToDoThis) {
             session.writeTransaction(new TransactionWork<Void>() {
                 @Override

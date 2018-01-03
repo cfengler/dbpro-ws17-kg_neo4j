@@ -1,5 +1,7 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.analysis;
 
+import de.tuberlin.dbpro.ws17.kg_neo4j.model.RdfQuadrupel;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -8,8 +10,7 @@ import java.util.stream.Stream;
 
 public class StringContainsAnalyser {
 
-    private static List<String> searchStrings = Arrays.asList(
-        "RA-MICRO");
+    private static List<String> searchStrings = Arrays.asList();
         //"<http://corp.dbpedia.org/resource/permid_5040791276>",
         //"<http://rdf.freebase.com/ns/m.0nbs2_2>",
         //"<http://rdf.freebase.com/ns/m.0p4wb>",
@@ -67,10 +68,10 @@ public class StringContainsAnalyser {
     private static List<String> getSortedLines(List<String> lines) {
         List<String> result = new ArrayList<>();
 
-        List<RdfEntity_cf> rdfEntries = new ArrayList<>();
+        List<RdfQuadrupel> rdfEntries = new ArrayList<>();
 
         for (String line:lines) {
-            rdfEntries.add(new RdfEntity_cf(line));
+            rdfEntries.add(new RdfQuadrupel(line));
         }
 
         rdfEntries.sort((o1, o2) ->  {
@@ -78,7 +79,7 @@ public class StringContainsAnalyser {
             return compareResult;
         });
 
-        for (RdfEntity_cf rdfEntry:rdfEntries) {
+        for (RdfQuadrupel rdfEntry:rdfEntries) {
             result.add(rdfEntry.toString());
         }
 

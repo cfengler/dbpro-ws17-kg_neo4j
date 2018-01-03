@@ -1,15 +1,5 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.model;
 
-import de.tuberlin.dbpro.ws17.kg_neo4j.analysis.RdfEntity_cf;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
-
 public class ModelExporter {
 
 //    private static String directory = "/media/cfengler/Kingston DT HyperX 3.0/Daten/";
