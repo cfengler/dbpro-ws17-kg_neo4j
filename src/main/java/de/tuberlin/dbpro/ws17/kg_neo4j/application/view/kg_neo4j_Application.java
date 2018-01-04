@@ -110,14 +110,14 @@ public class kg_neo4j_Application extends Application {
     }
 
     private static void initData() {
-        SmartDataWebImporter importer = new SmartDataWebImporter(Paths.get("resources/data"));
-        importer.connect();
-        List<String> importedLabels = importer.getAllLabels();
-        importer.disconnect();
+        //SmartDataWebImporter importer = new SmartDataWebImporter(Paths.get("resources/data"));
+        //importer.connect();
+        //List<String> importedLabels = importer.getAllLabels();
+        //importer.disconnect();
 
-        for(String s: importedLabels) {
-            addLabel(s);
-        }
+        //for(String s: importedLabels) {
+        //    addLabel(s);
+        //}
 
         for(int i = 0;i < 10;i++) {
             addNode("Node " + (i + 1));

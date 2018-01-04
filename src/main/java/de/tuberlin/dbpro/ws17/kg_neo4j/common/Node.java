@@ -5,11 +5,11 @@ import java.util.*;
 public class Node {
 
     public List<String> labels;
-    public Map<String, String> properties;
+    public Map<String, Property> properties;
 
     public Node() {
         this.labels = new ArrayList<String>();
-        this.properties = new HashMap<String, String>();
+        this.properties = new HashMap<String, Property>();
     }
 
     public String getCypher(String key) {

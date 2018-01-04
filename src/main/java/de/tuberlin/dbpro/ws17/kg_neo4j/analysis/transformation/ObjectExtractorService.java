@@ -27,7 +27,7 @@ public class ObjectExtractorService {
                     RdfQuadrupel rdfQuadrupel = new RdfQuadrupel(line);
                     if (rdfQuadrupel.object.equals(objectToSearch)) {
                         try {
-                            fileWriter.write(line);
+                            fileWriter.write(line + System.lineSeparator());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

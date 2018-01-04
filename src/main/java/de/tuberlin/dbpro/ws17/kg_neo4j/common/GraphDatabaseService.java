@@ -2,13 +2,11 @@ package de.tuberlin.dbpro.ws17.kg_neo4j.common;
 
 import org.neo4j.driver.v1.*;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class GraphDatabaseService implements Closeable {
+public class GraphDatabaseService implements AutoCloseable {
 
     private Driver driver = null;
     private Session session = null;
@@ -34,11 +32,11 @@ public class GraphDatabaseService implements Closeable {
         return getNodes(labels, null);
     }
 
-    public List<Node> getNodes(Map<String, String> properties) {
+    public List<Node> getNodes(Map<String, Property> properties) {
         return getNodes(null, properties);
     }
 
-    public List<Node> getNodes(List<String> labels, Map<String, String> properties) {
+    public List<Node> getNodes(List<String> labels, Map<String, Property> properties) {
 
         return session.writeTransaction(new TransactionWork<List<Node>>() {
             public List<Node> execute(Transaction transaction) {
@@ -62,7 +60,7 @@ public class GraphDatabaseService implements Closeable {
         });
     }
 
-    public void addNode(Node node) {
+    public void createNode(Node node) {
         session.writeTransaction(new TransactionWork<Void>() {
             public Void execute(Transaction transaction) {
 
@@ -70,6 +68,39 @@ public class GraphDatabaseService implements Closeable {
 
                 transaction.run(query);
 
+                return null;
+            }
+        });
+    }
+
+    public void createNodes(List<Node> nodes) {
+        session.writeTransaction(new TransactionWork<Void>() {
+            public Void execute(Transaction transaction) {
+
+                String query = "CREATE ";
+                //int i = 0;
+                for (int i = 0; i < nodes.size(); i++) {
+                    Node n = nodes.get(i);
+
+                    query += n.getCypher("n" + i);
+                    if (i < nodes.size() - 1) {
+                        query += ", ";
+                    }
+                }
+
+                transaction.run(query);
+
+                return null;
+            }
+        });
+    }
+
+    public void mergeNode(Node node) {
+        session.writeTransaction(new TransactionWork<Void>() {
+            @Override
+            public Void execute(Transaction transaction) {
+                String query = "MERGE " + node.getCypher("n");
+                transaction.run(query);
                 return null;
             }
         });
@@ -122,7 +153,7 @@ public class GraphDatabaseService implements Closeable {
         return null;
     }
 
-    public void addRelation(Relation relation) throws Exception {
+    public void createRelation(Relation relation) throws Exception {
         if (relation == null)
             throw new Exception("relation null");
 
@@ -145,6 +176,25 @@ public class GraphDatabaseService implements Closeable {
             }
         });
     }
+
+//    public void mergeRelation(Relation relation) throws Exception {
+//        if (relation == null)
+//            throw new Exception("relation null");
+//
+//        if (relation.firstNode == null)
+//            throw new Exception("relation.firstNode null");
+//
+//        if (relation.secondNode == null)
+//            throw new Exception("relation.secondNode null");
+//
+//        session.writeTransaction(new TransactionWork<Void>() {
+//            @Override
+//            public Void execute(Transaction transaction) {
+//                String query = "MERGE"
+//                return null;
+//            }
+//        })
+//    }
 
     public List<String> getAllLabels() {
         List<Record> records = session.writeTransaction(new TransactionWork<List<Record>>() {
@@ -180,7 +230,7 @@ public class GraphDatabaseService implements Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         session.close();
         driver.close();
     }

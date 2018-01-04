@@ -11,14 +11,14 @@ public class Relation {
     public Node secondNode;
 
     public List<String> labels;
-    public Map<String, String> properties;
+    public Map<String, Property> properties;
 
     public Relation(Node firstNode, Node secondNode) {
         this.firstNode = firstNode;
         this.secondNode = secondNode;
 
         this.labels = new ArrayList<String>();
-        this.properties = new HashMap<String, String>();
+        this.properties = new HashMap<String, Property>();
     }
 
     public String getCypher(String key) {

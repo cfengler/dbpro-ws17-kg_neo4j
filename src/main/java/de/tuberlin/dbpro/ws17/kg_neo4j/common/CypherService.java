@@ -13,16 +13,21 @@ public class CypherService {
         return result;
     }
 
-    public static  String getCypther(Map<String, String> properties) {
+    public static  String getCypther(Map<String, Property> properties) {
         String result = "";
 
         if (!properties.isEmpty()) {
             result += " { ";
 
-            for (Iterator<Map.Entry<String, String>> mapEntryIterator = properties.entrySet().iterator(); mapEntryIterator.hasNext();) {
-                Map.Entry<String, String> mapEntry = mapEntryIterator.next();
+            for (Iterator<Map.Entry<String, Property>> mapEntryIterator = properties.entrySet().iterator(); mapEntryIterator.hasNext();) {
+                Map.Entry<String, Property> mapEntry = mapEntryIterator.next();
 
-                result += mapEntry.getKey() + ": '" + mapEntry.getValue() + "'";
+                if (mapEntry.getValue().type == PropertyType.STRING) {
+                    result += mapEntry.getKey() + ": '" + mapEntry.getValue().value + "'";
+                }
+                else if (mapEntry.getValue().type == PropertyType.LONG) {
+                    result += mapEntry.getKey() + ": " + mapEntry.getValue().value + "";
+                }
 
                 if (mapEntryIterator.hasNext()) {
                     result += ", ";

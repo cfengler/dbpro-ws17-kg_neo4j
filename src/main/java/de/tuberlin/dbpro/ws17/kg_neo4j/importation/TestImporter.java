@@ -5,8 +5,10 @@ import java.nio.file.Paths;
 
 public class TestImporter {
 
+
+
     public static void main(String[] args) {
-        SmartDataWebImporter importer = new SmartDataWebImporter(Paths.get("resources/data"));
+        //SmartDataWebImporter importer = new SmartDataWebImporter(Paths.get("resources/data"));
         //importer.connect();
         //importer.createData();
         //importer.getAllLabels();
