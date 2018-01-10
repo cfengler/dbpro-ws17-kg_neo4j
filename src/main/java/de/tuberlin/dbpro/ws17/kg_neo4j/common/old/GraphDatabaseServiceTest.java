@@ -26,7 +26,7 @@ public class GraphDatabaseServiceTest {
         List<String> allLabels = dbService.getAllLabels();
 
         for (String label: allLabels) {
-            System.out.println("Label:" + label);
+            System.out.println("DbPediaLabel:" + label);
         }
 
 

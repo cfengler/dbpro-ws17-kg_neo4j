@@ -4,7 +4,6 @@ import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
-import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,35 +17,33 @@ public class DbPediaId {
 
     private String value = null;
 
-    @Relationship
+    @Relationship(type="SAME_AS", direction = Relationship.OUTGOING)
     DbProId dbProId;
 
     @Relationship(type="DATA_FROM", direction = Relationship.OUTGOING)
     Set<DataProvider> dataProviders;
 
     public DbPediaId() {
-
-    }
-
-    public DbPediaId(String value) {
-        this.value = value;
         this.dataProviders = new HashSet<>();
     }
+
+    //public DbPediaId(String value) {
+    //    this.value = value;
+    //    this.dataProviders = new HashSet<>();
+    //}
 
     public String getValue() {
         return value;
     }
+    public void setValue(String value) { this.value = value; }
 
     public Set<DataProvider> getDataProviders() {
         return dataProviders;
     }
 
+    public DbProId getDbProId() {return this.dbProId; }
     public void setDbProId(DbProId dbProId) {
         this.dbProId = dbProId;
-    }
-
-    public DbProId getDbProId() {
-        return this.dbProId;
     }
 
     @Override

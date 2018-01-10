@@ -73,58 +73,58 @@ public class DbPedia_01_DbPediaIdsService {
 //        };
 //    }
 
-    private static void gatherDbPediaIdsFromPredicateFile() {
-        try {
-            try (Stream<String> stream = Files.lines(Paths.get(filePathTypePredicate))) {
-                stream.forEach(line -> {
-                    if (line.startsWith(dbPediaPrefix)) {
-                        String[] lineSplit = line.split("\t");
+//    private static void gatherDbPediaIdsFromPredicateFile() {
+//        try {
+//            try (Stream<String> stream = Files.lines(Paths.get(filePathTypePredicate))) {
+//                stream.forEach(line -> {
+//                    if (line.startsWith(dbPediaPrefix)) {
+//                        String[] lineSplit = line.split("\t");
+//
+//                        if (lineSplit[2].equals(dbPediaOntologyCompany)) {
+//                            String dbPediaIdValue = ParseHelper.getDbPediaIdFromText(lineSplit[0]);
+//                            String dataProviderName = ParseHelper.getDataProviderName(lineSplit[3]);
+//
+//                            if (!dataProviders.containsKey(dataProviderName)) {
+//                                try {
+//                                    dataProviders.put(dataProviderName, new DataProvider(dataProviderName));
+//                                } catch (Exception e) {
+//                                    e.printStackTrace();
+//                                }
+//                            }
+//
+//                            if (!dbPediaIds.containsKey(dbPediaIdValue)) {
+//                                try {
+//                                    dbPediaIds.put(dbPediaIdValue, new DbPediaId(dbPediaIdValue));
+//                                    dbPediaIds.get(dbPediaIdValue).getDataProviders().add(dataProviders.get(dataProviderName));
+//                                } catch (Exception e) {
+//                                    e.printStackTrace();
+//                                }
+//                            } else {
+//                                dbPediaIds.get(dbPediaIdValue).getDataProviders().add(dataProviders.get(dataProviderName));
+//                            }
+//                        }
+//                    }
+//                });
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
-                        if (lineSplit[2].equals(dbPediaOntologyCompany)) {
-                            String dbPediaIdValue = ParseHelper.getDbPediaIdFromText(lineSplit[0]);
-                            String dataProviderName = ParseHelper.getDataProviderName(lineSplit[3]);
-
-                            if (!dataProviders.containsKey(dataProviderName)) {
-                                try {
-                                    dataProviders.put(dataProviderName, new DataProvider(dataProviderName));
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                            if (!dbPediaIds.containsKey(dbPediaIdValue)) {
-                                try {
-                                    dbPediaIds.put(dbPediaIdValue, new DbPediaId(dbPediaIdValue));
-                                    dbPediaIds.get(dbPediaIdValue).getDataProviders().add(dataProviders.get(dataProviderName));
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                dbPediaIds.get(dbPediaIdValue).getDataProviders().add(dataProviders.get(dataProviderName));
-                            }
-                        }
-                    }
-                });
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void createDbProIds() {
-        for (int i = 0; i < dbPediaIdsSorted.size(); i++) {
-            DbPediaId dbPediaId = dbPediaIdsSorted.get(i);
-            try {
-                DbProId dbProId = new DbProId(i + 1, dataProviderDbPro);
-                dbPediaId.setDbProId(dbProId);
-                dbProIds.put(dbProId.getValue(), dbProId);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-
-    }
+//    private static void createDbProIds() {
+//        for (int i = 0; i < dbPediaIdsSorted.size(); i++) {
+//            DbPediaId dbPediaId = dbPediaIdsSorted.get(i);
+//            try {
+//                DbProId dbProId = new DbProId(i + 1, dataProviderDbPro);
+//                dbPediaId.setDbProId(dbProId);
+//                dbProIds.put(dbProId.getValue(), dbProId);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//
+//    }
 
     private static void saveDataProviders() {
         try {

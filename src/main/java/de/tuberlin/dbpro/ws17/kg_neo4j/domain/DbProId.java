@@ -22,14 +22,28 @@ public class DbProId {
     @Relationship(type="DATA_FROM", direction = Relationship.OUTGOING)
     DataProvider dataProvider;
 
-    public DbProId(long value, DataProvider dataProvider) {
-        this.value = value;
-        this.dataProvider = dataProvider;
+    public DbProId() {
+
     }
+
+//    public DbProId(long value) {
+//        this.value = value;
+//    }
+//
+//    public DbProId(long value, DataProvider dataProvider) {
+//        this.value = value;
+//        this.dataProvider = dataProvider;
+//    }
 
     public long getValue() {
         return this.value;
     }
+    public void setValue(long value) { this.value = value; }
+
+    public DataProvider getDataProvider() {
+        return this.dataProvider;
+    }
+    public void setDataProvider(DataProvider dataProvider) { this.dataProvider = dataProvider; }
 
     public DbPediaId getDbPediaId() {
         return this.dbPediaId;

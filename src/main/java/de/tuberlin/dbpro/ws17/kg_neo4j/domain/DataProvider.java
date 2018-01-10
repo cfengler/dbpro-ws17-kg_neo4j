@@ -10,26 +10,28 @@ import java.util.Set;
 
 @NodeEntity
 public class DataProvider {
-    @org.neo4j.ogm.annotation.Id
+
+    @Id
     @GeneratedValue
     private Long id;
 
     private String name;
 
-    @Relationship(type="DATA_FROM", direction = Relationship.INCOMING)
-    Set<DbPediaId> dbPediaIds;
+    //@Relationship(type="DATA_FROM", direction = Relationship.INCOMING)
+    //Set<DbPediaId> dbPediaIds;
 
     public DataProvider() {
 
     }
 
-    public DataProvider(String name) {
-        this.name = name;
-    }
+    //public DataProvider(String name) {
+    //    this.name = name;
+    //}
 
     public String getName() {
         return name;
     }
+    public void setName(String name) { this.name = name; }
 
     @Override
     public boolean equals(Object o) {

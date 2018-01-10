@@ -55,4 +55,31 @@ public class ParseHelper {
     public static String getDataProviderName(String text) {
         return text.substring(0, text.length() - 2);
     }
+
+    public static String getDbPediaLabelValue(String text) {
+        try {
+            String labelText = StringEscapeUtils.unescapeJava(text.substring(0, text.lastIndexOf("@")));
+
+            return labelText.substring(1, labelText.length() - 1);
+        }
+        catch (Exception e) {
+            return "";
+        }
+    }
+
+    public static String getDbPediaLabelLanguageKey(String text) {
+        try {
+            String languageKeyText = StringEscapeUtils.unescapeJava(text.substring(text.lastIndexOf("@") + 1));
+
+            return languageKeyText;
+        } catch (Exception e) {
+            String a = text.replace("\\\\\"","\"");
+            String b = text.replace("\\\"","\"");
+            String c = text.replace("\"","\"");
+            String b2 = text.replaceAll("\\\"","\"");
+
+            return "";
+        }
+
+    }
 }
