@@ -1,20 +1,5 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.importation;
 
-import de.tuberlin.dbpro.ws17.kg_neo4j.common.GraphDatabaseService;
-import de.tuberlin.dbpro.ws17.kg_neo4j.common.Node;
-import de.tuberlin.dbpro.ws17.kg_neo4j.common.Relation;
-import org.neo4j.driver.v1.*;
-
-import java.io.*;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
-
 public class SmartDataWebImporter {
 
 //    private GraphDatabaseService graphDatabaseService = null;
