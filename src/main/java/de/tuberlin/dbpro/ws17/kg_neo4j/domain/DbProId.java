@@ -19,8 +19,14 @@ public class DbProId {
     @Relationship(type = "SAME_AS", direction = Relationship.INCOMING)
     DbPediaId dbPediaId;
 
-    @Relationship(type="DATA_FROM", direction = Relationship.OUTGOING)
+    @Relationship(type = "DATA_FROM", direction = Relationship.OUTGOING)
     DataProvider dataProvider;
+
+    @Relationship(type = "HAS_LABEL", direction = Relationship.OUTGOING)
+    Set<DbPediaLabel> dbPediaLabels;
+
+    @Relationship(type = "HAS_MAIN_LABEL", direction = Relationship.OUTGOING)
+    MainLabel mainLabel;
 
     public DbProId() {
 
@@ -34,6 +40,10 @@ public class DbProId {
 //        this.value = value;
 //        this.dataProvider = dataProvider;
 //    }
+
+    public long getId() {
+        return id;
+    }
 
     public long getValue() {
         return this.value;
@@ -49,6 +59,8 @@ public class DbProId {
         return this.dbPediaId;
     }
     public void setDbPediaId(DbPediaId dbPediaId) { this.dbPediaId = dbPediaId; }
+
+    public Set<DbPediaLabel> getDbPediaLabels() { return this.dbPediaLabels; }
 
     @Override
     public boolean equals(Object o) {
