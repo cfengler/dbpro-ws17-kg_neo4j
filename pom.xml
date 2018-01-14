@@ -22,12 +22,6 @@
         </plugins>
     </build>
 
-    <!--<parent>-->
-        <!--<groupId>org.springframework.boot</groupId>-->
-        <!--<artifactId>spring-boot-starter-parent</artifactId>-->
-        <!--<version>1.5.8.RELEASE</version>-->
-    <!--</parent>-->
-
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <dependency>
@@ -35,41 +29,6 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.4</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/de.roskenet/springboot-javafx-support -->
-        <dependency>
-            <groupId>de.roskenet</groupId>
-            <artifactId>springboot-javafx-support</artifactId>
-            <version>2.1.5</version>
-        </dependency>
-
-
-        <!-- https://mvnrepository.com/artifact/org.neo4j/neo4j -->
-        <!--<dependency>-->
-            <!--<groupId>org.neo4j</groupId>-->
-            <!--<artifactId>neo4j</artifactId>-->
-            <!--<version>3.3.1</version>-->
-        <!--</dependency>-->
-
-        <!-- https://mvnrepository.com/artifact/org.neo4j.driver/neo4j-java-driver -->
-        <!--<dependency>-->
-            <!--<groupId>org.neo4j.driver</groupId>-->
-            <!--<artifactId>neo4j-java-driver</artifactId>-->
-            <!--<version>1.5.0</version>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>org.neo4j.driver</groupId>-->
-            <!--<artifactId>neo4j-java-driver</artifactId>-->
-            <!--<version>1.4.4</version>-->
-        <!--</dependency>-->
-
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter -->
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.boot</groupId>-->
-            <!--<artifactId>spring-boot-starter</artifactId>-->
-            <!--<version>2.0.0.M7</version>-->
-        <!--</dependency>-->
 
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter -->
         <dependency>
@@ -84,7 +43,6 @@
             <artifactId>spring-core</artifactId>
             <version>5.0.2.RELEASE</version>
         </dependency>
-
 
         <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-neo4j -->
         <dependency>

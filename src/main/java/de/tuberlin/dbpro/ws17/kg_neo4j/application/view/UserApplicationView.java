@@ -1,11 +1,8 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.application.view;
 
-import de.felixroske.jfxsupport.AbstractJavaFxApplicationSupport;
-import de.felixroske.jfxsupport.FXMLView;
 import de.tuberlin.dbpro.ws17.kg_neo4j.ApplicationStartup;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.Layout;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.MainNeighbourLayout;
-import de.tuberlin.dbpro.ws17.kg_neo4j.application.RandomLayout;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.Model;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.viewmodel.CellTypeViewModel;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.viewmodel.GraphViewModel;
@@ -26,25 +23,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.List;
 
-//@Component
-@Configuration
-@EnableTransactionManagement
-@ComponentScan
-@EnableNeo4jRepositories("de.tuberlin.dbpro.ws17.kg_neo4j.repositories")
-public class UserApplicationView extends Application {// Application {
+public class UserApplicationView extends Application {
 
     private static final BorderPane pnFoundation = new BorderPane();
     private static final GridPane pnSearch = new GridPane();
