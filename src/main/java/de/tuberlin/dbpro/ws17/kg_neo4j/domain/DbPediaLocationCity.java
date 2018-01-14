@@ -6,33 +6,28 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
 @NodeEntity
-public class MainLabel {
+public class DbPediaLocationCity {
 
     @Id
     @GeneratedValue
-    Long id;
+    private Long id;
 
-    private String value = null;
+    private String value;
 
-    @Relationship(type="HAS_MAIN_LABEL", direction = Relationship.INCOMING)
+    @Relationship(type = "HAS_LOCATION_CITY", direction = Relationship.INCOMING)
     DbProId dbProId;
 
-    @Relationship(type="DATA_FROM", direction = Relationship.OUTGOING)
+    @Relationship(type = "DATA_FROM", direction = Relationship.OUTGOING)
     DataProvider dataProvider;
 
-    public MainLabel() {
+    public DbPediaLocationCity() {
 
     }
 
     public String getValue() {
         return value;
     }
-    public void setValue(String value) { this.value = value; }
-
-    public DbProId getDbProId() {return this.dbProId; }
-    public void setDbProId(DbProId dbProId) {
-        this.dbProId = dbProId;
-    }
+    public void setValue(String name) { this.value = value; }
 
     public DataProvider getDataProvider() {
         return this.dataProvider;

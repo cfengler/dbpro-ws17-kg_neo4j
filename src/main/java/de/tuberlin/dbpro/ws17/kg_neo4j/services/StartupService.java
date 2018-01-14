@@ -1,6 +1,8 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.services;
 
 import de.tuberlin.dbpro.ws17.kg_neo4j.domain.Company;
+import de.tuberlin.dbpro.ws17.kg_neo4j.domain.CompanyInfo;
+import de.tuberlin.dbpro.ws17.kg_neo4j.repositories.DbPediaAffiliatedCompanyRelationRepository;
 import de.tuberlin.dbpro.ws17.kg_neo4j.services.LabelsService;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.CommandLineRunner;
@@ -16,12 +18,39 @@ public class StartupService implements CommandLineRunner, ApplicationContextAwar
 
     @Override
     public void run(String... strings) throws Exception {
-        //final CompanyService companyService = applicationContext.getBean(CompanyService.class);
-        //List<Company> companies = companyService.findBySearchString("Global Load Control");
+        final CompanyService companyService = applicationContext.getBean(CompanyService.class);
+        //List<Company> companies = companyService.findBySearchString("Porsche Automobil Holding");
+        //List<Company> companies = companyService.findBySearchString("Volkswagen AG");
+        //List<Company> companies = companyService.findBySearchString("Volkswagen Commercial Vehicles");
 
-        //TODO: 1. importiere abstract (wichtig)
+        List<Company> companies = companyService.findBySearchString("Lufthansa");
 
-        //TODO: 2. importiere Tochtergesellschaftsbeziehungen parent und susidiary (wichtig)
+        if (companies == null || companies.size() == 0) {
+            System.out.println("Keine Daten geunden.");
+        }
+        else {
+            for (Company c:companies) {
+                System.out.println(c.id);
+                System.out.println(c.name);
+                System.out.println(c.dbPediaAbstract);
+                if (c.parentCompany != null) {
+                    System.out.println("Parent-Company: " + c.parentCompany.name);
+                }
+                if (c.subsidiaries != null) {
+                    for (CompanyInfo companyInfo:c.subsidiaries) {
+                        System.out.println("Subsidiary: " + companyInfo.name);
+                    }
+                }
+            }
+        }
+
+        //1. importiere abstract (wichtig)
+        //final DbPediaAbstractService service = applicationContext.getBean(DbPediaAbstractService.class);
+        //service.importDbPediaAbstract();
+
+        //2. importiere Tochtergesellschaftsbeziehungen parent und susidiary (wichtig)
+        //final DbPediaAffiliatedCompanyRelationService service = applicationContext.getBean(DbPediaAffiliatedCompanyRelationService.class);
+        //service.importDbPediaAffiliatedCompanyRelations();
         //TODO: 2.1 importiere Land und Bundesland
         //TODO:
         //TODO: 3. importier property names (vielleicht auch nicht)
@@ -32,9 +61,7 @@ public class StartupService implements CommandLineRunner, ApplicationContextAwar
         //TODO:
 
 
-        //for (Company c:companies) {
-        //    System.out.println(c.name);
-        //}
+
         //TODO: bloß nicht nochmal ausführen, dann wird alles doppelt
         //final LabelsService labelsService = applicationContext.getBean(LabelsService.class);
         //labelsService.importNodesAndRelations();
