@@ -1,9 +1,11 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.services;
 
+import de.tuberlin.dbpro.ws17.kg_neo4j.application.view.UserApplicationView;
 import de.tuberlin.dbpro.ws17.kg_neo4j.domain.Company;
 import de.tuberlin.dbpro.ws17.kg_neo4j.domain.CompanyInfo;
 import de.tuberlin.dbpro.ws17.kg_neo4j.repositories.DbPediaAffiliatedCompanyRelationRepository;
 import de.tuberlin.dbpro.ws17.kg_neo4j.services.LabelsService;
+import javafx.application.Application;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
@@ -18,31 +20,39 @@ public class StartupService implements CommandLineRunner, ApplicationContextAwar
 
     @Override
     public void run(String... strings) throws Exception {
-        final CompanyService companyService = applicationContext.getBean(CompanyService.class);
+        new Thread() {
+            @Override
+            public void run() {
+                javafx.application.Application.launch(UserApplicationView.class);
+            }
+        }.start();
+
+
+        //final CompanyService companyService = applicationContext.getBean(CompanyService.class);
         //List<Company> companies = companyService.findBySearchString("Porsche Automobil Holding");
         //List<Company> companies = companyService.findBySearchString("Volkswagen AG");
         //List<Company> companies = companyService.findBySearchString("Volkswagen Commercial Vehicles");
 
-        List<Company> companies = companyService.findBySearchString("Lufthansa");
-
-        if (companies == null || companies.size() == 0) {
-            System.out.println("Keine Daten geunden.");
-        }
-        else {
-            for (Company c:companies) {
-                System.out.println(c.id);
-                System.out.println(c.name);
-                System.out.println(c.dbPediaAbstract);
-                if (c.parentCompany != null) {
-                    System.out.println("Parent-Company: " + c.parentCompany.name);
-                }
-                if (c.subsidiaries != null) {
-                    for (CompanyInfo companyInfo:c.subsidiaries) {
-                        System.out.println("Subsidiary: " + companyInfo.name);
-                    }
-                }
-            }
-        }
+//        List<Company> companies = companyService.findBySearchString("Lufthansa");
+//
+//        if (companies == null || companies.size() == 0) {
+//            System.out.println("Keine Daten geunden.");
+//        }
+//        else {
+//            for (Company c:companies) {
+//                System.out.println(c.id);
+//                System.out.println(c.name);
+//                System.out.println(c.dbPediaAbstract);
+//                if (c.parentCompany != null) {
+//                    System.out.println("Parent-Company: " + c.parentCompany.name);
+//                }
+//                if (c.subsidiaries != null) {
+//                    for (CompanyInfo companyInfo:c.subsidiaries) {
+//                        System.out.println("Subsidiary: " + companyInfo.name);
+//                    }
+//                }
+//            }
+//        }
 
         //1. importiere abstract (wichtig)
         //final DbPediaAbstractService service = applicationContext.getBean(DbPediaAbstractService.class);

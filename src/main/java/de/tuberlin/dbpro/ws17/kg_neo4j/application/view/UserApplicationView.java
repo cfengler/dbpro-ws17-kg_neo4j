@@ -1,6 +1,5 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.application.view;
 
-import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.Layout;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.MainNeighbourLayout;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.RandomLayout;
@@ -23,6 +22,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
