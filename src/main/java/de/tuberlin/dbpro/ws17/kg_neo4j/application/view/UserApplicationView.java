@@ -1,5 +1,6 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.application.view;
 
+import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.Layout;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.MainNeighbourLayout;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.RandomLayout;
@@ -21,7 +22,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserApplicationView extends Application {
 
     private static final BorderPane pnFoundation = new BorderPane();
@@ -48,6 +53,15 @@ public class UserApplicationView extends Application {
     private static final ToggleGroup tgSearch = new ToggleGroup();
 
     private static final String fontname = "Helvetica Neue";
+
+
+    //protected static void launchApp(Class<? extends UserApplicationView> appClass, String[] args) {
+    //    Application.launch(appClass, args);
+   // }
+
+    public UserApplicationView() {
+
+    }
 
     public void start(Stage primaryStage) {
         primaryStage.setTitle("DBPRO");

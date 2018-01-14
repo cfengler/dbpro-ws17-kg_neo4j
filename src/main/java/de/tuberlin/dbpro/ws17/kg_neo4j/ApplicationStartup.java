@@ -1,7 +1,9 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j;
 
+import javafx.embed.swing.JFXPanel;
 import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +18,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class ApplicationStartup {
 
     public static void main(String[] args) {
-        SpringApplication.run(ApplicationStartup.class, args);
+        JFXPanel panel = new JFXPanel();
+        ConfigurableApplicationContext springContext = SpringApplication.run(ApplicationStartup.class, args);
     }
 
     @Bean
