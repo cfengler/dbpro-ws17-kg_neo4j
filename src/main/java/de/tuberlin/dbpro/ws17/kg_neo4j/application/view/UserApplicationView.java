@@ -1,11 +1,16 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.application.view;
 
+import de.felixroske.jfxsupport.AbstractJavaFxApplicationSupport;
+import de.felixroske.jfxsupport.FXMLView;
+import de.tuberlin.dbpro.ws17.kg_neo4j.ApplicationStartup;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.Layout;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.MainNeighbourLayout;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.RandomLayout;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.Model;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.viewmodel.CellTypeViewModel;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.viewmodel.GraphViewModel;
+import de.tuberlin.dbpro.ws17.kg_neo4j.domain.Company;
+import de.tuberlin.dbpro.ws17.kg_neo4j.services.CompanyService;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -25,10 +30,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@Component
-public class UserApplicationView extends Application {
+import java.util.List;
+
+//@Component
+@Configuration
+@EnableTransactionManagement
+@ComponentScan
+@EnableNeo4jRepositories("de.tuberlin.dbpro.ws17.kg_neo4j.repositories")
+public class UserApplicationView extends Application {// Application {
 
     private static final BorderPane pnFoundation = new BorderPane();
     private static final GridPane pnSearch = new GridPane();
@@ -59,12 +75,21 @@ public class UserApplicationView extends Application {
     //protected static void launchApp(Class<? extends UserApplicationView> appClass, String[] args) {
     //    Application.launch(appClass, args);
    // }
+    //@Autowired
+    //private CompanyService companyService = null;
 
-    public UserApplicationView() {
 
+    public UserApplicationView(){ //CompanyService companyService) {
+//        this.companyService = companyService;
     }
 
+    private AnnotationConfigApplicationContext context;
+
     public void start(Stage primaryStage) {
+        context = new AnnotationConfigApplicationContext(ApplicationStartup.class);
+
+        CompanyService companyService = context.getBean(CompanyService.class);
+        List<Company> test = companyService.findBySearchString("Lufthansa");
         primaryStage.setTitle("DBPRO");
 
         initSearch();

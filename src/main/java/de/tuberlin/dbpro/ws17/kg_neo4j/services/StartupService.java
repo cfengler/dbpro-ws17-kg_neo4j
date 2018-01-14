@@ -14,20 +14,21 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
+//@Component
 public class StartupService implements CommandLineRunner, ApplicationContextAware {
     private ApplicationContext applicationContext;
 
     @Override
     public void run(String... strings) throws Exception {
-        new Thread() {
-            @Override
-            public void run() {
-                javafx.application.Application.launch(UserApplicationView.class);
-            }
-        }.start();
+//        new Thread() {
+//            @Override
+//            public void run() {
+//                //javafx.application.Application.l
+//                javafx.application.Application.launch(UserApplicationView.class);
+//            }
+//        }.start();
 
-
+String bla = "bla";
         //final CompanyService companyService = applicationContext.getBean(CompanyService.class);
         //List<Company> companies = companyService.findBySearchString("Porsche Automobil Holding");
         //List<Company> companies = companyService.findBySearchString("Volkswagen AG");
