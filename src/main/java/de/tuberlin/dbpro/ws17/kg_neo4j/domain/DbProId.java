@@ -25,21 +25,18 @@ public class DbProId {
     @Relationship(type = "HAS_LABEL", direction = Relationship.OUTGOING)
     Set<DbPediaLabel> dbPediaLabels;
 
-    @Relationship(type = "HAS_MAIN_LABEL", direction = Relationship.OUTGOING)
-    MainLabel mainLabel;
+    @Relationship(type = "HAS_ABSTRACT", direction = Relationship.OUTGOING)
+    Set<DbPediaAbstract> dbPediaAbstracts;
+
+    @Relationship(type = "HAS_DBPEDIA_PARENT_COMPANY", direction = Relationship.OUTGOING)
+    DbPediaAffiliatedCompanyRelation dbPediaParentCompany;
+
+    @Relationship(type = "HAS_DBPEDIA_SUBSIDIARY", direction = Relationship.OUTGOING)
+    Set<DbPediaAffiliatedCompanyRelation> dbPediaSubsidiaries;
 
     public DbProId() {
 
     }
-
-//    public DbProId(long value) {
-//        this.value = value;
-//    }
-//
-//    public DbProId(long value, DataProvider dataProvider) {
-//        this.value = value;
-//        this.dataProvider = dataProvider;
-//    }
 
     public long getId() {
         return id;
@@ -61,6 +58,18 @@ public class DbProId {
     public void setDbPediaId(DbPediaId dbPediaId) { this.dbPediaId = dbPediaId; }
 
     public Set<DbPediaLabel> getDbPediaLabels() { return this.dbPediaLabels; }
+
+    public Set<DbPediaAbstract> getDbPediaAbstract() {
+        return this.dbPediaAbstracts;
+    }
+    //public void setDbPediaAbstract(Set<DbPediaAbstract> dbPediaAbstracts) { this.dbPediaAbstracts = dbPediaAbstracts; }
+
+    public DbPediaAffiliatedCompanyRelation getDbPediaParentCompany() {
+        return this.dbPediaParentCompany;
+    }
+    public void setDbPediaParentCompany(DbPediaAffiliatedCompanyRelation dbPediaParentCompany) { this.dbPediaParentCompany = dbPediaParentCompany; }
+
+    public Set<DbPediaAffiliatedCompanyRelation> getDbPediaSubsidiaries() { return this.dbPediaSubsidiaries; }
 
     @Override
     public boolean equals(Object o) {

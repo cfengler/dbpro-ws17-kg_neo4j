@@ -1,223 +1,233 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.services;
 
-import de.tuberlin.dbpro.ws17.kg_neo4j.domain.DataProvider;
-import de.tuberlin.dbpro.ws17.kg_neo4j.domain.DbPediaId;
 import de.tuberlin.dbpro.ws17.kg_neo4j.domain.DbProId;
-import de.tuberlin.dbpro.ws17.kg_neo4j.importation.DataProviderComparator;
-import de.tuberlin.dbpro.ws17.kg_neo4j.importation.DbPediaIdsComparator;
-import de.tuberlin.dbpro.ws17.kg_neo4j.importation.DbProIdsComparator;
 import de.tuberlin.dbpro.ws17.kg_neo4j.repositories.DataProviderRepository;
 import de.tuberlin.dbpro.ws17.kg_neo4j.repositories.DbPediaIdRepository;
 import de.tuberlin.dbpro.ws17.kg_neo4j.repositories.DbProIdRepository;
-import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 
 @Component
 @Scope(value = "singleton")
-public class IdsService {
+public class DbProIdService {
 
     private DataProviderRepository dataProviderRepository;
     private DbProIdRepository dbProIdRepository;
     private DbPediaIdRepository dbPediaIdRepository;
 
-    private static String filePathDataProviders = "/media/cfengler/MyPassport_1TB/Datenimport DbPedia/DataProviders.data";
-    private static String filePathDbPediaIds = "/media/cfengler/MyPassport_1TB/Datenimport DbPedia/DbPediaIds.data";
-
-    private static String dbProDataProviderName = "tuberlin.dbpro.kg_neo4j";
-    private static Map<String, DataProvider> dataProviders = null;
-    private static List<DataProvider> dataProvidersSorted = null;
-
-    private static Map<String, DbPediaId> dbPediaIds = null;
-    private static List<DbPediaId> dbPediaIdsSorted = null;
-
-    private static Map<Long, DbProId> dbProIds = null;
-    private static List<DbProId> dbProIdsSorted = null;
-
-    private static DataProvider dataProviderDbPro = null;
+//    private static String filePathDataProviders = "/media/cfengler/MyPassport_1TB/Datenimport DbPedia/DataProviders.data";
+//    private static String filePathDbPediaIds = "/media/cfengler/MyPassport_1TB/Datenimport DbPedia/DbPediaIds.data";
+//
+//    private static String dbProDataProviderName = "tuberlin.dbpro.kg_neo4j";
+//    private static Map<String, DataProvider> dataProviders = null;
+//    private static List<DataProvider> dataProvidersSorted = null;
+//
+//    private static Map<String, DbPediaId> dbPediaIds = null;
+//    private static List<DbPediaId> dbPediaIdsSorted = null;
+//
+//    private static Map<Long, DbProId> dbProIds = null;
+//    private static List<DbProId> dbProIdsSorted = null;
+//
+//    private static DataProvider dataProviderDbPro = null;
 
     @Autowired
-    public IdsService(DataProviderRepository dataProviderRepository,
-                      DbProIdRepository dbProIdRepository,
-                      DbPediaIdRepository dbPediaIdRepository,
-                      SessionFactory sessionFactory) {
+    public DbProIdService(DataProviderRepository dataProviderRepository,
+                          DbProIdRepository dbProIdRepository,
+                          DbPediaIdRepository dbPediaIdRepository) {
         this.dataProviderRepository = dataProviderRepository;
         this.dbProIdRepository = dbProIdRepository;
         this.dbPediaIdRepository = dbPediaIdRepository;
     }
 
-    public void importNodesAndRelations() {
-        dataProviders = new HashMap<>();
-        dbPediaIds = new HashMap<>();
-        dbProIds = new HashMap<>();
+    public Map<String, DbProId> getDbProIdsByDbPediaIdValue() {
+        Map<String, DbProId> result = new HashMap<>();
 
-        gatherNodes();
+        Page<DbProId> dbProIdsTemp = dbProIdRepository.findAll(PageRequest.of(0, 10000));
 
-        dataProvidersSorted = new ArrayList<>(dataProviders.values());
-        dataProvidersSorted.sort(new DataProviderComparator());
-        dbProIdsSorted = new ArrayList<>(dbProIds.values());
-        dbProIdsSorted.sort(new DbProIdsComparator());
-        dbPediaIdsSorted = new ArrayList<>(dbPediaIds.values());
-        dbPediaIdsSorted.sort(new DbPediaIdsComparator());
-
-        importNodes();
-
-        gatherDbProIdsRelations();
-        importDbProIdsInChunks();
-
-        gatherDbPediaIdsRelations();
-        importDbPediaIdsInChunks();
-    }
-
-    private void gatherNodes() {
-        try {
-
-            try (Stream<String> stream = Files.lines(Paths.get(filePathDataProviders))) {
-                stream.skip(1).forEach(line -> {
-                    DataProvider dataProvider = new DataProvider();
-                    dataProvider.setName(line);
-                    dataProviders.put(line, dataProvider);
-                });
-            }
-
-            dataProviderDbPro = dataProviders.get(dbProDataProviderName);
-
-            AtomicInteger ai = new AtomicInteger(0);
-            try (Stream<String> stream = Files.lines(Paths.get(filePathDbPediaIds))) {
-                stream.skip(1).forEach(line -> {
-                    ai.set(ai.get() + 1);
-                    String[] lineSplit = line.split(";");
-
-                    DbProId dbProId = new DbProId();
-                    dbProId.setValue(Long.parseLong(lineSplit[0]));
-                    dbProId.setDataProvider(dataProviderDbPro);
-                    if (dbProIds.containsKey(dbProId.getValue())) {
-                        System.out.println(line);
-                    }
-                    dbProIds.put(dbProId.getValue(), dbProId);
-
-                    DbPediaId dbPediaId = new DbPediaId();
-                    dbPediaId.setValue(lineSplit[1]);
-                    if (dbPediaIds.containsKey(dbPediaId.getValue())) {
-                        System.out.println(line);
-                    }
-                    dbPediaIds.put(dbPediaId.getValue(), dbPediaId);
-                });
-            }
-            System.out.println(ai.get());
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (DbProId dbProId:dbProIdsTemp) {
+            result.put(dbProId.getDbPediaId().getValue(), dbProId);
         }
 
-    }
+        while (dbProIdsTemp.hasNext()) {
+            dbProIdsTemp = dbProIdRepository.findAll(dbProIdsTemp.nextPageable());
 
-    private void importNodes() {
-        dataProviderRepository.saveAll(dataProvidersSorted);
-        importDbProIdsInChunks();
-        importDbPediaIdsInChunks();
-    }
-
-    private void gatherDbProIdsRelations() {
-        try {
-            try (Stream<String> stream = Files.lines(Paths.get(filePathDbPediaIds))) {
-                stream.skip(1).forEach(line -> {
-                    String[] lineSplit = line.split(";");
-                    DbProId dbProId = dbProIds.get(Long.parseLong(lineSplit[0]));
-                    DbPediaId dbPediaId = dbPediaIds.get(lineSplit[1]);
-
-                    dbProId.setDbPediaId(dbPediaId);
-                    dbProId.setDataProvider(dataProviderDbPro);
-                });
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void gatherDbPediaIdsRelations() {
-        try {
-            try (Stream<String> stream = Files.lines(Paths.get(filePathDbPediaIds))) {
-                stream.skip(1).forEach(line -> {
-                    String[] lineSplit = line.split(";");
-
-                    DbPediaId dbPediaId = dbPediaIds.get(lineSplit[1]);
-
-                    String[] dataProviderNames = lineSplit[2].split("\\|");
-                    for (String dataProviderName:dataProviderNames) {
-                        dbPediaId.getDataProviders().add(dataProviders.get(dataProviderName));
-                    }
-                });
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void importDbProIdsInChunks() {
-        System.out.println("DbProIds");
-        List<DbProId> tempChunkList = new ArrayList<>();
-
-        for (int i = 0; i < dbProIdsSorted.size(); i++) {
-
-            tempChunkList.add(dbProIdsSorted.get(i));
-
-            if (tempChunkList.size() == 500) {
-                System.out.println((i + 1) + "/" + dbProIdsSorted.size());
-                dbProIdRepository.saveAll(tempChunkList);
-                tempChunkList.clear();
+            for (DbProId dbProId:dbProIdsTemp) {
+                result.put(dbProId.getDbPediaId().getValue(), dbProId);
             }
         }
 
-        if (tempChunkList.size() > 0) {
-            dbProIdRepository.saveAll(tempChunkList);
-            tempChunkList.clear();
-        }
-    }
-
-    private void importDbPediaIdsInChunks() {
-        System.out.println("DbPediaIds");
-        List<DbPediaId> tempChunkList = new ArrayList<>();
-
-        for (int i = 0; i < dbPediaIdsSorted.size(); i++) {
-
-            tempChunkList.add(dbPediaIdsSorted.get(i));
-
-            if (tempChunkList.size() == 500) {
-                System.out.println((i + 1) + "/" + dbPediaIdsSorted.size());
-                dbPediaIdRepository.saveAll(tempChunkList);
-                tempChunkList.clear();
-            }
-        }
-
-        if (tempChunkList.size() > 0) {
-            dbPediaIdRepository.saveAll(tempChunkList);
-            tempChunkList.clear();
-        }
-    }
-
-    public Set<String> getDbPediaIdsFromFile() {
-        Set<String> result = new HashSet<>();
-        try {
-            try (Stream<String> stream = Files.lines(Paths.get(filePathDbPediaIds))) {
-                stream.skip(1).forEach(line -> {
-                    String[] lineSplit = line.split(";");
-
-                    result.add(lineSplit[1]);
-                });
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return result;
     }
+
+//    public void importNodesAndRelations() {
+//        dataProviders = new HashMap<>();
+//        dbPediaIds = new HashMap<>();
+//        dbProIds = new HashMap<>();
+//
+//        gatherNodes();
+//
+//        dataProvidersSorted = new ArrayList<>(dataProviders.values());
+//        dataProvidersSorted.sort(new DataProviderComparator());
+//        dbProIdsSorted = new ArrayList<>(dbProIds.values());
+//        dbProIdsSorted.sort(new DbProIdsComparator());
+//        dbPediaIdsSorted = new ArrayList<>(dbPediaIds.values());
+//        dbPediaIdsSorted.sort(new DbPediaIdsComparator());
+//
+//        importNodes();
+//
+//        gatherDbProIdsRelations();
+//        importDbProIdsInChunks();
+//
+//        gatherDbPediaIdsRelations();
+//        importDbPediaIdsInChunks();
+//    }
+
+//    private void gatherNodes() {
+//        try {
+//
+//            try (Stream<String> stream = Files.lines(Paths.get(filePathDataProviders))) {
+//                stream.skip(1).forEach(line -> {
+//                    DataProvider dataProvider = new DataProvider();
+//                    dataProvider.setName(line);
+//                    dataProviders.put(line, dataProvider);
+//                });
+//            }
+//
+//            dataProviderDbPro = dataProviders.get(dbProDataProviderName);
+//
+//            AtomicInteger ai = new AtomicInteger(0);
+//            try (Stream<String> stream = Files.lines(Paths.get(filePathDbPediaIds))) {
+//                stream.skip(1).forEach(line -> {
+//                    ai.set(ai.get() + 1);
+//                    String[] lineSplit = line.split(";");
+//
+//                    DbProId dbProId = new DbProId();
+//                    dbProId.setValue(Long.parseLong(lineSplit[0]));
+//                    dbProId.setDataProvider(dataProviderDbPro);
+//                    if (dbProIds.containsKey(dbProId.getValue())) {
+//                        System.out.println(line);
+//                    }
+//                    dbProIds.put(dbProId.getValue(), dbProId);
+//
+//                    DbPediaId dbPediaId = new DbPediaId();
+//                    dbPediaId.setValue(lineSplit[1]);
+//                    if (dbPediaIds.containsKey(dbPediaId.getValue())) {
+//                        System.out.println(line);
+//                    }
+//                    dbPediaIds.put(dbPediaId.getValue(), dbPediaId);
+//                });
+//            }
+//            System.out.println(ai.get());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
+
+//    private void importNodes() {
+//        dataProviderRepository.saveAll(dataProvidersSorted);
+//        importDbProIdsInChunks();
+//        importDbPediaIdsInChunks();
+//    }
+//
+//    private void gatherDbProIdsRelations() {
+//        try {
+//            try (Stream<String> stream = Files.lines(Paths.get(filePathDbPediaIds))) {
+//                stream.skip(1).forEach(line -> {
+//                    String[] lineSplit = line.split(";");
+//                    DbProId dbProId = dbProIds.get(Long.parseLong(lineSplit[0]));
+//                    DbPediaId dbPediaId = dbPediaIds.get(lineSplit[1]);
+//
+//                    dbProId.setDbPediaId(dbPediaId);
+//                    dbProId.setDataProvider(dataProviderDbPro);
+//                });
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    private void gatherDbPediaIdsRelations() {
+//        try {
+//            try (Stream<String> stream = Files.lines(Paths.get(filePathDbPediaIds))) {
+//                stream.skip(1).forEach(line -> {
+//                    String[] lineSplit = line.split(";");
+//
+//                    DbPediaId dbPediaId = dbPediaIds.get(lineSplit[1]);
+//
+//                    String[] dataProviderNames = lineSplit[2].split("\\|");
+//                    for (String dataProviderName:dataProviderNames) {
+//                        dbPediaId.getDataProviders().add(dataProviders.get(dataProviderName));
+//                    }
+//                });
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+//    private void importDbProIdsInChunks() {
+//        System.out.println("DbProIds");
+//        List<DbProId> tempChunkList = new ArrayList<>();
+//
+//        for (int i = 0; i < dbProIdsSorted.size(); i++) {
+//
+//            tempChunkList.add(dbProIdsSorted.get(i));
+//
+//            if (tempChunkList.size() == 500) {
+//                System.out.println((i + 1) + "/" + dbProIdsSorted.size());
+//                dbProIdRepository.saveAll(tempChunkList);
+//                tempChunkList.clear();
+//            }
+//        }
+//
+//        if (tempChunkList.size() > 0) {
+//            dbProIdRepository.saveAll(tempChunkList);
+//            tempChunkList.clear();
+//        }
+//    }
+//
+//    private void importDbPediaIdsInChunks() {
+//        System.out.println("DbPediaIds");
+//        List<DbPediaId> tempChunkList = new ArrayList<>();
+//
+//        for (int i = 0; i < dbPediaIdsSorted.size(); i++) {
+//
+//            tempChunkList.add(dbPediaIdsSorted.get(i));
+//
+//            if (tempChunkList.size() == 500) {
+//                System.out.println((i + 1) + "/" + dbPediaIdsSorted.size());
+//                dbPediaIdRepository.saveAll(tempChunkList);
+//                tempChunkList.clear();
+//            }
+//        }
+//
+//        if (tempChunkList.size() > 0) {
+//            dbPediaIdRepository.saveAll(tempChunkList);
+//            tempChunkList.clear();
+//        }
+//    }
+//
+//    public Set<String> getDbPediaIdsFromFile() {
+//        Set<String> result = new HashSet<>();
+//        try {
+//            try (Stream<String> stream = Files.lines(Paths.get(filePathDbPediaIds))) {
+//                stream.skip(1).forEach(line -> {
+//                    String[] lineSplit = line.split(";");
+//
+//                    result.add(lineSplit[1]);
+//                });
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return result;
+//    }
 
     //private static String filePathTypePredicate = "/media/cfengler/Kingston DT HyperX 3.0/Predicates/_http___www.w3.org_1999_02_22-rdf-syntax-ns_type_.predicate";
 

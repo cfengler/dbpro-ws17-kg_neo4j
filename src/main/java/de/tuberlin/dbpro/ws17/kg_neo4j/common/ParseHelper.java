@@ -82,4 +82,17 @@ public class ParseHelper {
         }
 
     }
+
+    public static String getDbPediaAbstractValue(String text) {
+        int lastIndexOfAt = text.lastIndexOf("@");
+        String value = StringEscapeUtils.unescapeJava(text.substring(1, lastIndexOfAt - 1));
+        return value;
+    }
+
+    public static String getDbPediaAbstractLanguageKey(String text) {
+        int lastIndexOfAt = text.lastIndexOf("@");
+        String languageKey = StringEscapeUtils.unescapeJava(text.substring(lastIndexOfAt + 1));
+        return languageKey;
+    }
+
 }
