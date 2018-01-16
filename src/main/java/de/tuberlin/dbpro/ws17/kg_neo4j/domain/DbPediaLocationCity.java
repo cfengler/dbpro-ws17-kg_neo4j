@@ -5,6 +5,8 @@ import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
+import java.util.Set;
+
 @NodeEntity
 public class DbPediaLocationCity {
 
@@ -12,10 +14,10 @@ public class DbPediaLocationCity {
     @GeneratedValue
     private Long id;
 
-    private String value;
+    private String name;
 
-    @Relationship(type = "HAS_LOCATION_CITY", direction = Relationship.INCOMING)
-    DbProId dbProId;
+    @Relationship(type = "HAS_DBPEDIA_LOCATION_CITY", direction = Relationship.INCOMING)
+    Set<DbProId> dbProIds;
 
     @Relationship(type = "DATA_FROM", direction = Relationship.OUTGOING)
     DataProvider dataProvider;
@@ -24,10 +26,13 @@ public class DbPediaLocationCity {
 
     }
 
-    public String getValue() {
-        return value;
+    public String getName() {
+        return name;
     }
-    public void setValue(String name) { this.value = value; }
+    public void setName(String name) { this.name = name; }
+
+    public Set<DbProId> getDbProIds() { return this.dbProIds; }
+    public void setDbProId(Set<DbProId> dbProIds) { this.dbProIds = dbProIds; }
 
     public DataProvider getDataProvider() {
         return this.dataProvider;

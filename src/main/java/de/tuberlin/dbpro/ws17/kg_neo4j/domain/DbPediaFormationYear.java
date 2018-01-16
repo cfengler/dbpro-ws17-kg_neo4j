@@ -8,28 +8,28 @@ import org.neo4j.ogm.annotation.Relationship;
 import java.util.Set;
 
 @NodeEntity
-public class DbPediaLocationCountry {
+public class DbPediaFormationYear {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    private String name;
+    private int value;
 
-    @Relationship(type = "HAS_DBPEDIA_LOCATION_COUNTRY", direction = Relationship.INCOMING)
+    @Relationship(type = "HAS_DBPEDIA_FORMATION_YEAR", direction = Relationship.INCOMING)
     Set<DbProId> dbProIds;
 
     @Relationship(type = "DATA_FROM", direction = Relationship.OUTGOING)
     DataProvider dataProvider;
 
-    public DbPediaLocationCountry() {
+    public DbPediaFormationYear() {
 
     }
 
-    public String getName() {
-        return name;
+    public int getValue() {
+        return value;
     }
-    public void setName(String name) { this.name = name; }
+    public void setValue(int value) { this.value = value; }
 
     public Set<DbProId> getDbProIds() { return this.dbProIds; }
     public void setDbProId(Set<DbProId> dbProIds) { this.dbProIds = dbProIds; }

@@ -1,5 +1,6 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.services;
 
+import de.tuberlin.dbpro.ws17.kg_neo4j.domain.DbPediaId;
 import de.tuberlin.dbpro.ws17.kg_neo4j.domain.DbProId;
 import de.tuberlin.dbpro.ws17.kg_neo4j.repositories.DataProviderRepository;
 import de.tuberlin.dbpro.ws17.kg_neo4j.repositories.DbPediaIdRepository;
@@ -20,6 +21,107 @@ public class DbProIdService {
     private DbProIdRepository dbProIdRepository;
     private DbPediaIdRepository dbPediaIdRepository;
 
+    private Map<Long, DbProId> dbProIdsByDbProIdValue = null;
+
+    @Autowired
+    public DbProIdService(DataProviderRepository dataProviderRepository,
+                          DbProIdRepository dbProIdRepository,
+                          DbPediaIdRepository dbPediaIdRepository) {
+        this.dataProviderRepository = dataProviderRepository;
+        this.dbProIdRepository = dbProIdRepository;
+        this.dbPediaIdRepository = dbPediaIdRepository;
+
+        dbProIdsByDbProIdValue = new HashMap<>();
+    }
+
+    public Map<String, DbProId> getDbProIdsByDbPediaIdValue() {
+        long start = System.currentTimeMillis();
+
+        Map<String, DbProId> result = new HashMap<>();
+
+        Page<DbProId> dbProIdsTemp = dbProIdRepository.findAll(PageRequest.of(0, 2000));
+
+        for (DbProId dbProId:dbProIdsTemp) {
+            result.put(dbProId.getDbPediaId().getValue(), dbProId);
+        }
+
+        while (dbProIdsTemp.hasNext()) {
+            dbProIdsTemp = dbProIdRepository.findAll(dbProIdsTemp.nextPageable());
+
+            for (DbProId dbProId:dbProIdsTemp) {
+                result.put(dbProId.getDbPediaId().getValue(), dbProId);
+            }
+        }
+
+        System.out.println("getDbProIdsByDbPediaIdValue need " + (System.currentTimeMillis() - start) + " ms.");
+
+        return result;
+    }
+
+    public Map<String, DbProId> getDbProIdsByDbPediaIdValueFast() {
+        long start = System.currentTimeMillis();
+
+        Map<String, DbProId> result = new HashMap<>();
+
+        Page<DbPediaId> dbPediaIdsTemp = dbPediaIdRepository.findAll(PageRequest.of(0, 10000));
+
+        for (DbPediaId dbPediaId:dbPediaIdsTemp) {
+            result.put(dbPediaId.getValue(), dbPediaId.getDbProId());
+        }
+
+        while (dbPediaIdsTemp.hasNext()) {
+            dbPediaIdsTemp = dbPediaIdRepository.findAll(dbPediaIdsTemp.nextPageable());
+
+            for (DbPediaId dbPediaId:dbPediaIdsTemp) {
+                result.put(dbPediaId.getValue(), dbPediaId.getDbProId());
+            }
+        }
+
+        System.out.println("getDbProIdsFastWithDbPediaIdRepository need " + (System.currentTimeMillis() - start) + " ms.");
+
+        return result;
+    }
+
+    public DbProId findDbProIdByValue(Long value) {
+        if (dbProIdsByDbProIdValue.containsKey(value)) {
+            return dbProIdsByDbProIdValue.get(value);
+        }
+
+        DbProId dbProId = dbProIdRepository.findByValue(value);
+        if (dbProId != null) {
+            dbProIdsByDbProIdValue.put(value, dbProId);
+            return dbProIdsByDbProIdValue.get(value);
+        }
+
+        return null;
+    }
+
+    public List<DbProId> findDbProIdsByValueIn(Iterable<Long> values) {
+        List<DbProId> result = new ArrayList<>();
+        List<Long> dbProIdValuesNotRetrieved = new ArrayList<>();
+
+        for (long dbProIdValue:values) {
+            if (dbProIdsByDbProIdValue.containsKey(dbProIdValue)) {
+                result.add(dbProIdsByDbProIdValue.get(dbProIdValue));
+            }
+            else {
+                dbProIdValuesNotRetrieved.add(dbProIdValue);
+            }
+        }
+
+        if (dbProIdValuesNotRetrieved.size() == 0) {
+            return result;
+        }
+        else {
+            List<DbProId> loadedDbProIds = dbProIdRepository.findByValueIn(dbProIdValuesNotRetrieved);
+            for (DbProId dbProId:loadedDbProIds) {
+                dbProIdsByDbProIdValue.put(dbProId.getValue(), dbProId);
+            }
+            result.addAll(loadedDbProIds);
+            return result;
+        }
+    }
+
 //    private static String filePathDataProviders = "/media/cfengler/MyPassport_1TB/Datenimport DbPedia/DataProviders.data";
 //    private static String filePathDbPediaIds = "/media/cfengler/MyPassport_1TB/Datenimport DbPedia/DbPediaIds.data";
 //
@@ -34,35 +136,6 @@ public class DbProIdService {
 //    private static List<DbProId> dbProIdsSorted = null;
 //
 //    private static DataProvider dataProviderDbPro = null;
-
-    @Autowired
-    public DbProIdService(DataProviderRepository dataProviderRepository,
-                          DbProIdRepository dbProIdRepository,
-                          DbPediaIdRepository dbPediaIdRepository) {
-        this.dataProviderRepository = dataProviderRepository;
-        this.dbProIdRepository = dbProIdRepository;
-        this.dbPediaIdRepository = dbPediaIdRepository;
-    }
-
-    public Map<String, DbProId> getDbProIdsByDbPediaIdValue() {
-        Map<String, DbProId> result = new HashMap<>();
-
-        Page<DbProId> dbProIdsTemp = dbProIdRepository.findAll(PageRequest.of(0, 10000));
-
-        for (DbProId dbProId:dbProIdsTemp) {
-            result.put(dbProId.getDbPediaId().getValue(), dbProId);
-        }
-
-        while (dbProIdsTemp.hasNext()) {
-            dbProIdsTemp = dbProIdRepository.findAll(dbProIdsTemp.nextPageable());
-
-            for (DbProId dbProId:dbProIdsTemp) {
-                result.put(dbProId.getDbPediaId().getValue(), dbProId);
-            }
-        }
-
-        return result;
-    }
 
 //    public void importNodesAndRelations() {
 //        dataProviders = new HashMap<>();

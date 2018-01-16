@@ -12,6 +12,8 @@ public class DbPediaAffiliatedCompanyRelation {
     @GeneratedValue
     private Long id;
 
+    private long customId;
+
     @Relationship(type = "HAS_DBPEDIA_PARENT_COMPANY", direction = Relationship.INCOMING)
     DbProId subsidiary;
 
@@ -28,6 +30,11 @@ public class DbPediaAffiliatedCompanyRelation {
     public long getId() {
         return id;
     }
+
+    public long getCustomId() {
+        return customId;
+    }
+    public void setCustomId(long customId) { this.customId = customId; }
 
     public DbProId getSubsidiary() {
         return subsidiary;

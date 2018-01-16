@@ -17,16 +17,9 @@ public class DataProvider {
 
     private String name;
 
-    //@Relationship(type="DATA_FROM", direction = Relationship.INCOMING)
-    //Set<DbPediaId> dbPediaIds;
-
     public DataProvider() {
 
     }
-
-    //public DataProvider(String name) {
-    //    this.name = name;
-    //}
 
     public String getName() {
         return name;

@@ -34,6 +34,18 @@ public class DbProId {
     @Relationship(type = "HAS_DBPEDIA_SUBSIDIARY", direction = Relationship.OUTGOING)
     Set<DbPediaAffiliatedCompanyRelation> dbPediaSubsidiaries;
 
+    @Relationship(type = "HAS_DBPEDIA_LOCATION_COUNTRY", direction = Relationship.OUTGOING)
+    Set<DbPediaLocationCountry> dbPediaLocationCountries;
+
+    @Relationship(type = "HAS_DBPEDIA_LOCATION_CITY", direction = Relationship.OUTGOING)
+    Set<DbPediaLocationCity> dbPediaLocationCities;
+
+    @Relationship(type = "HAS_DBPEDIA_FORMATION_YEAR", direction = Relationship.OUTGOING)
+    Set<DbPediaFormationYear> dbPediaFormationYears;
+
+    @Relationship(type = "HAS_DBPEDIA_NUMBER_OF_EMPLOYEES", direction = Relationship.OUTGOING)
+    Set<DbPediaNumberOfEmployees> dbPediaNumberOfEmployees;
+
     public DbProId() {
 
     }
@@ -45,17 +57,17 @@ public class DbProId {
     public long getValue() {
         return this.value;
     }
-    public void setValue(long value) { this.value = value; }
+    //public void setValue(long value) { this.value = value; }
 
     public DataProvider getDataProvider() {
         return this.dataProvider;
     }
-    public void setDataProvider(DataProvider dataProvider) { this.dataProvider = dataProvider; }
+    //public void setDataProvider(DataProvider dataProvider) { this.dataProvider = dataProvider; }
 
     public DbPediaId getDbPediaId() {
         return this.dbPediaId;
     }
-    public void setDbPediaId(DbPediaId dbPediaId) { this.dbPediaId = dbPediaId; }
+    //public void setDbPediaId(DbPediaId dbPediaId) { this.dbPediaId = dbPediaId; }
 
     public Set<DbPediaLabel> getDbPediaLabels() { return this.dbPediaLabels; }
 
@@ -67,9 +79,17 @@ public class DbProId {
     public DbPediaAffiliatedCompanyRelation getDbPediaParentCompany() {
         return this.dbPediaParentCompany;
     }
-    public void setDbPediaParentCompany(DbPediaAffiliatedCompanyRelation dbPediaParentCompany) { this.dbPediaParentCompany = dbPediaParentCompany; }
+    //public void setDbPediaParentCompany(DbPediaAffiliatedCompanyRelation dbPediaParentCompany) { this.dbPediaParentCompany = dbPediaParentCompany; }
 
     public Set<DbPediaAffiliatedCompanyRelation> getDbPediaSubsidiaries() { return this.dbPediaSubsidiaries; }
+
+    public Set<DbPediaLocationCountry> getDbPediaLocationCountries() { return this.dbPediaLocationCountries; }
+
+    public Set<DbPediaLocationCity> getDbPediaLocationCities() { return this.dbPediaLocationCities; }
+
+    public Set<DbPediaFormationYear> getDbPediaFormationYears() {return this.dbPediaFormationYears; }
+
+    public Set<DbPediaNumberOfEmployees> getDbPediaNumberOfEmployees() { return this.dbPediaNumberOfEmployees; }
 
     @Override
     public boolean equals(Object o) {

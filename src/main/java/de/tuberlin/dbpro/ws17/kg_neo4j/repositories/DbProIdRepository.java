@@ -14,10 +14,6 @@ import java.util.List;
 public interface DbProIdRepository extends PagingAndSortingRepository<DbProId, Long> {
 
     DbProId findByValue(long value);
-
-    @Query("MATCH (n:DbProId)-[:HAS_LABEL]->(m:DbPediaLabel) " +
-           "WHERE m.value CONTAINS {0} " +
-           "RETURN DISTINCT n")
-    List<DbProId> getDbProIdsThatHasLabelContainingValue(String labelValue);
+    List<DbProId> findByValueIn(Iterable<Long> values);
 
 }

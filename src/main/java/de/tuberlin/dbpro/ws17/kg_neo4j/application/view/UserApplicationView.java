@@ -76,7 +76,7 @@ public class UserApplicationView extends Application {
         context = new AnnotationConfigApplicationContext(ApplicationStartup.class);
 
         CompanyService companyService = context.getBean(CompanyService.class);
-        List<Company> test = companyService.findBySearchString("Lufthansa");
+        List<Company> test = companyService.getCompaniesByLocationContainingName("Lufthansa");
         primaryStage.setTitle("DBPRO");
 
         initSearch();
