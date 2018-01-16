@@ -95,4 +95,23 @@ public class ParseHelper {
         return languageKey;
     }
 
+    public static String getDbPediaCountryNameFromText(String text) {
+        String result = getDbPediaIdFromText(text);
+        result = result.replaceAll("_", " ");
+        return result;
+    }
+
+    public static int getDbPediaFormationYearFromText(String text) {
+        int result = Integer.parseInt(text.substring(1,5));
+        return result;
+    }
+
+    public static int getDbPediaNumberOfEmployeesValue(String text) {
+        String textSubstring = text.substring(1, text.indexOf("^^") - 1);
+        //String[] textSplit = text.split("\\^\\^");
+        //String textSubstring = textSplit[0].substring(1, text.length() - 1);
+        int result = Integer.parseInt(textSubstring);
+        return result;
+    }
+
 }

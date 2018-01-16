@@ -39,7 +39,7 @@ public class DbPediaAffiliatedCompanyRelationService {
 
     public void importDbPediaAffiliatedCompanyRelations() {
         Map<String, DataProvider> dataProvidersByDataProviderName = dataProviderService.getDataProvidersByDataProviderName();
-        Map<String, DbProId> dbProIdsByDbPediaIdValue = dbProIdService.getDbProIdsByDbPediaIdValue();
+        Map<String, DbProId> dbProIdsByDbPediaIdValue = dbProIdService.getDbProIdsByDbPediaIdValueFast();
 
         Map<String, DbPediaAffiliatedCompanyRelation> newDbPediaAffiliatedCompanyRelations = new HashMap<>();
 
@@ -115,8 +115,9 @@ public class DbPediaAffiliatedCompanyRelationService {
         List<DbPediaAffiliatedCompanyRelation> tempChunkList = new ArrayList<>();
 
         for (int i = 0; i < newDbPediaAffiliatedCompanyRelations.size(); i++) {
-
-            tempChunkList.add(newDbPediaAffiliatedCompanyRelations.get(i));
+            DbPediaAffiliatedCompanyRelation relation = newDbPediaAffiliatedCompanyRelations.get(i);
+            relation.setCustomId(i + 1);
+            tempChunkList.add(relation);
 
             if (tempChunkList.size() > 500) {
                 System.out.println(i + "/" + newDbPediaAffiliatedCompanyRelations.size());

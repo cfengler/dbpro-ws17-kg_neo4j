@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class ApplicationStartup {
 
     public static void main(String[] args) {
-        JFXPanel panel = new JFXPanel();
+        //JFXPanel panel = new JFXPanel();
         ConfigurableApplicationContext springContext = SpringApplication.run(ApplicationStartup.class, args);
     }
 

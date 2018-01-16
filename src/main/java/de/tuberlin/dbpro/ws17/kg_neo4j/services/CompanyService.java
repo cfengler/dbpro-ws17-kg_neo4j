@@ -1,128 +1,198 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.services;
 
 import de.tuberlin.dbpro.ws17.kg_neo4j.domain.*;
-import de.tuberlin.dbpro.ws17.kg_neo4j.repositories.DbPediaAffiliatedCompanyRelationRepository;
-import de.tuberlin.dbpro.ws17.kg_neo4j.repositories.DbPediaLabelRepository;
-import de.tuberlin.dbpro.ws17.kg_neo4j.repositories.DbProIdRepository;
+import de.tuberlin.dbpro.ws17.kg_neo4j.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 @Component
 @Scope(value = "singleton")
 public class CompanyService {
 
-    private DbProIdRepository dbProIdRepository = null;
-    //private DbPediaLabelRepository dbPediaLabelRepository = null;
+    private DbProIdService dbProIdService = null;
+    private DbPediaLabelRepository dbPediaLabelRepository = null;
     private DbPediaAffiliatedCompanyRelationRepository dbPediaAffiliatedCompanyRelationRepository = null;
+    private DbPediaLocationCountryRepository dbPediaLocationCountryRepository = null;
+    private DbPediaLocationCityRepository dbPediaLocationCityRepository = null;
+    private DbPediaFormationYearRepository dbPediaFormationYearRepository = null;
 
     @Autowired
-    public CompanyService(DbProIdRepository dbProIdRepository,
-                          DbPediaAffiliatedCompanyRelationRepository dbPediaAffiliatedCompanyRelationRepository) {
-                          //DbPediaLabelRepository dbPediaLabelRepository) {
-        this.dbProIdRepository = dbProIdRepository;
+    public CompanyService(DbProIdService dbProIdService,
+                          DbPediaLabelRepository dbPediaLabelRepository,
+                          DbPediaAffiliatedCompanyRelationRepository dbPediaAffiliatedCompanyRelationRepository,
+                          DbPediaLocationCountryRepository dbPediaLocationCountryRepository,
+                          DbPediaLocationCityRepository dbPediaLocationCityRepository,
+                          DbPediaFormationYearRepository dbPediaFormationYearRepository) {
+        this.dbProIdService = dbProIdService;
         this.dbPediaAffiliatedCompanyRelationRepository = dbPediaAffiliatedCompanyRelationRepository;
-        //this.dbPediaLabelRepository = dbPediaLabelRepository;
+        this.dbPediaLabelRepository = dbPediaLabelRepository;
+        this.dbPediaLocationCountryRepository = dbPediaLocationCountryRepository;
+        this.dbPediaLocationCityRepository = dbPediaLocationCityRepository;
+        this.dbPediaFormationYearRepository = dbPediaFormationYearRepository;
     }
 
-    public List<Company> findBySearchString(String searchString) {
+    public List<Company> getCompaniesByLabelContainingName(String name) {
+        List<DbPediaLabel> dbPediaLabels = dbPediaLabelRepository.findByValueContainsIgnoreCase(name);
+        Set<Long> dbProIdValues = new HashSet<>();
+        dbPediaLabels.stream().forEach(dbPediaLabel -> dbProIdValues.add(dbPediaLabel.getDbProId().getValue()));
 
-        //Page<DbProId> dbProIdsTemp = dbProIdRepository.findAll(PageRequest.of(0, 1000, Sort.Direction.ASC, "value"));
-        //checkDbProIds(dbProIdsTemp);
-        //importNodesForDbPediaIds(dbPediaLabelsByDbPediaId, dbPediaIds);
-        //while (dbProIdsTemp.hasNext()) {
-        //    System.out.println("ich arbeite");
-        //    dbProIdsTemp = dbProIdRepository.findAll(dbProIdsTemp.nextPageable());
-            //checkDbProIds(dbProIdsTemp);
-        //}
-
-        List<DbProId> dbProIds = dbProIdRepository.getDbProIdsThatHasLabelContainingValue(searchString);
-        if (dbProIds.size() > 0) {
-            return findByDbProIds(dbProIds);
+        if (dbProIdValues.size() > 0) {
+            List<DbProId> dbProIds = dbProIdService.findDbProIdsByValueIn(dbProIdValues);
+            List<Company> result = new ArrayList<>(convertDbProIdsToCompanies(dbProIds));
+            return result;
         }
         //TODO: search somewhere else...
         return new ArrayList<>();
     }
 
-//    private void checkDbProIds(Page<DbProId> dbProIdsTemp) {
-//        for (DbProId dbProId:dbProIdsTemp) {
-//            if (dbProId.getDbPediaLabels() == null || dbProId.getDbPediaLabels().size() == 0) {
-//                System.out.println("ahaha");
-//            }
-//        }
-//    }
+    public List<Company> getCompaniesByLocationContainingName(String name) {
+        List<DbPediaLocationCountry> dbPediaLocationCountries = this.dbPediaLocationCountryRepository.findByNameContainsIgnoreCase(name);
+        List<DbPediaLocationCity> dbPediaLocationCities = this.dbPediaLocationCityRepository.findByNameContainsIgnoreCase(name);
+        Set<Long> dbProIdValues = new HashSet<>();
+        dbPediaLocationCountries.forEach(dbPediaLocationCountry -> dbPediaLocationCountry.getDbProIds().forEach(dbProId -> dbProIdValues.add(dbProId.getValue())));
+        dbPediaLocationCities.forEach(dbPediaLocationCity -> dbPediaLocationCity.getDbProIds().forEach(dbProId -> dbProIdValues.add(dbProId.getValue())));
 
+        List<DbProId> dbProIds = dbProIdService.findDbProIdsByValueIn(dbProIdValues);
+        List<Company> result = convertDbProIdsToCompanies(dbProIds);
+        //resolveDbPediaAffiliatedCompanyRelations(result);
+        return result;
+    }
 
+    public List<Company> getCompaniesByFormationYear(Integer year) {
+        List<DbPediaFormationYear> dbPediaFormationYears = this.dbPediaFormationYearRepository.findByValue(year);
+        Set<Long> dbProIdValues = new HashSet<>();
+        dbPediaFormationYears.forEach(dbPediaFormationYear -> dbPediaFormationYear.getDbProIds().forEach(dbProId -> dbProIdValues.add(dbProId.getValue())));
+        List<DbProId> dbProIds = dbProIdService.findDbProIdsByValueIn(dbProIdValues);
+        List<Company> result = convertDbProIdsToCompanies(dbProIds);
 
-    private List<Company> findByDbProIds(Iterable<DbProId> dbProIds) {
+        return result;
+    }
+
+    private List<Company> convertDbProIdsToCompanies(Iterable<DbProId> dbProIds) {
         List<Company> result = new ArrayList<>();
         for (DbProId dbProId:dbProIds) {
-            Company company = findByDbProId(dbProId);
-            if (company != null) {
-                result.add(company);
-            }
+            Company company = convertDbProIdToCompany(dbProId);
+
+            result.add(company);
         }
         return result;
     }
 
-    public Company findByDbProId(DbProId dbProId) {
-        Optional<DbProId> searchedDbProId = this.dbProIdRepository.findById(dbProId.getId());
-        if (searchedDbProId.isPresent()) {
-            Company company = new Company();
-            company.id = searchedDbProId.get().getId();
-            company.name = selectName(searchedDbProId.get().getDbPediaLabels());// .iterator().next().getValue();
-            company.dbPediaAbstract = selectDbPediaAbstract(searchedDbProId.get().getDbPediaAbstract());
-            if (searchedDbProId.get().getDbPediaParentCompany() != null) {
-                company.parentCompany = getCompanyInfoByDbPediaAffiliatedCompanyRelationParentCompany(searchedDbProId.get().getDbPediaParentCompany());
-            }
-
-            if (searchedDbProId.get().getDbPediaSubsidiaries() != null) {
-
-                company.subsidiaries = getCompanyInfoByDbPediaAffiliatedCompanyRelationsSubsidiary(searchedDbProId.get().getDbPediaSubsidiaries());// DbProIds(searchedDbProId.get().getDbPediaSubsidiaries().stream().map(t -> t.getSubsidiary()));
-            }
-
-            return company;
-        }
-        return null;
+    private Company convertDbProIdToCompany(DbProId dbProId) {
+        Company company = new Company();
+        company.dbProId = dbProId;
+        company.name = selectName(dbProId.getDbPediaLabels());
+        company.dbPediaAbstract = selectDbPediaAbstract(dbProId.getDbPediaAbstract());
+        company.dbPediaLocationCountries = getDbPediaLocationCountries(dbProId.getDbPediaLocationCountries());
+        company.dbPediaLocationCities = getDbPediaLocationCities(dbProId.getDbPediaLocationCities());
+        company.dbPediaFormationYears = getDbPediaFormationYears(dbProId.getDbPediaFormationYears());
+        company.dbPediaNumberOfEmployees = getDbPediaNumberOfEmployees(dbProId.getDbPediaNumberOfEmployees());
+        return company;
     }
 
-    public CompanyInfo getCompanyInfoByDbProId(DbProId dbProId) {
-        Optional<DbProId> searchedDbProId = this.dbProIdRepository.findById(dbProId.getId());
-        if (searchedDbProId.isPresent()) {
-            CompanyInfo companyInfo = new CompanyInfo();
-            companyInfo.id = searchedDbProId.get().getId();
-            companyInfo.name = selectName(searchedDbProId.get().getDbPediaLabels());
-            return companyInfo;
+    public void resolveDbPediaAffiliatedCompanyRelations(List<Company> companies) {
+        for (Company company:companies) {
+            resolveDbPediaParentCompanyRelation(company);
         }
-        return null;
     }
 
-    public CompanyInfo getCompanyInfoByDbPediaAffiliatedCompanyRelationParentCompany(DbPediaAffiliatedCompanyRelation dbPediaAffiliatedCompanyRelation) {
-        Optional<DbPediaAffiliatedCompanyRelation> relation = dbPediaAffiliatedCompanyRelationRepository.findById(dbPediaAffiliatedCompanyRelation.getId());
-        if (relation.isPresent()) {
-            return getCompanyInfoByDbProId(relation.get().getParentCompany());
-        }
-        return null;
+    public void resolveDbPediaAffiliatedCompanyRelation(Company company) {
+        resolveDbPediaParentCompanyRelation(company);
+        resolveDbPediaSubsidiariesRelations(company);
     }
 
-    public List<CompanyInfo> getCompanyInfoByDbPediaAffiliatedCompanyRelationsSubsidiary(Set<DbPediaAffiliatedCompanyRelation> dbPediaAffiliatedCompanyRelations) {
-        List<CompanyInfo> result = new ArrayList<>();
-
-        dbPediaAffiliatedCompanyRelations.forEach(dbPediaAffiliatedCompanyRelation -> {
-            Optional<DbPediaAffiliatedCompanyRelation> relation = dbPediaAffiliatedCompanyRelationRepository.findById(dbPediaAffiliatedCompanyRelation.getId());
+    private void resolveDbPediaParentCompanyRelation(Company company) {
+        if (company.dbProId.getDbPediaParentCompany() != null && company.dbPediaParentCompany == null) {
+            Optional<DbPediaAffiliatedCompanyRelation> relation = dbPediaAffiliatedCompanyRelationRepository.findById(company.dbProId.getDbPediaParentCompany().getId());
             if (relation.isPresent()) {
-                result.add(getCompanyInfoByDbProId(relation.get().getSubsidiary()));
-            }
-        });
+                DbProId dbProIdParentCompany = dbProIdService.findDbProIdByValue(relation.get().getParentCompany().getValue());
+                if (dbProIdParentCompany != null) {
+                    company.dbPediaParentCompany = convertDbProIdToCompany(dbProIdParentCompany);
+                    resolveDbPediaParentCompanyRelation(company.dbPediaParentCompany);
+                }
 
-        return result;
+            }
+            //notLoadedRelations.add(company.dbProId.getDbPediaParentCompany());
+        }
     }
+
+    private void resolveDbPediaSubsidiariesRelations(Company company) {
+        if (company.dbProId.getDbPediaSubsidiaries() != null && company.dbPediaSubsidiaries == null) {
+            List<Long> customIds = company.dbProId.getDbPediaSubsidiaries()
+                .stream()
+                .map(dbPediaAffiliatedCompanyRelation -> dbPediaAffiliatedCompanyRelation.getCustomId())
+                .collect(Collectors.toList());
+            List<DbPediaAffiliatedCompanyRelation> relations = dbPediaAffiliatedCompanyRelationRepository.findByCustomIdIn(customIds);
+
+            List<Long> dbProIdValues = relations.stream().map(relation -> relation.getSubsidiary().getValue()).collect(Collectors.toList());
+
+            List<DbProId> dbProIds = dbProIdService.findDbProIdsByValueIn(dbProIdValues);
+            company.dbPediaSubsidiaries = convertDbProIdsToCompanies(dbProIds);
+
+            for (Company subsidiary:company.dbPediaSubsidiaries) {
+                resolveDbPediaSubsidiariesRelations(subsidiary);
+            }
+        }
+    }
+
+
+
+//    public Company findByDbProId(DbProId dbProId) {
+//        Optional<DbProId> searchedDbProId = this.dbProIdRepository.findById(dbProId.getId());
+//        if (searchedDbProId.isPresent()) {
+//            Company company = new Company();
+//            company.id = searchedDbProId.get().getId();
+//            company.name = selectName(searchedDbProId.get().getDbPediaLabels());// .iterator().next().getValue();
+//            company.dbPediaAbstract = selectDbPediaAbstract(searchedDbProId.get().getDbPediaAbstract());
+//            if (searchedDbProId.get().getDbPediaParentCompany() != null) {
+//                company.parentCompany = getCompanyInfoByDbPediaAffiliatedCompanyRelationParentCompany(searchedDbProId.get().getDbPediaParentCompany());
+//            }
+//
+//            if (searchedDbProId.get().getDbPediaSubsidiaries() != null) {
+//
+//                company.subsidiaries = getCompanyInfoByDbPediaAffiliatedCompanyRelationsSubsidiary(searchedDbProId.get().getDbPediaSubsidiaries());// DbProIds(searchedDbProId.get().getDbPediaSubsidiaries().stream().map(t -> t.getSubsidiary()));
+//            }
+//
+//            return company;
+//        }
+//        return null;
+//    }
+
+//    public CompanyInfo getCompanyInfoByDbProId(DbProId dbProId) {
+//        Optional<DbProId> searchedDbProId = this.dbProIdRepository.findById(dbProId.getId());
+//        if (searchedDbProId.isPresent()) {
+//            CompanyInfo companyInfo = new CompanyInfo();
+//            companyInfo.id = searchedDbProId.get().getId();
+//            companyInfo.name = selectName(searchedDbProId.get().getDbPediaLabels());
+//            return companyInfo;
+//        }
+//        return null;
+//    }
+
+//    public CompanyInfo getCompanyInfoByDbPediaAffiliatedCompanyRelationParentCompany(DbPediaAffiliatedCompanyRelation dbPediaAffiliatedCompanyRelation) {
+//        Optional<DbPediaAffiliatedCompanyRelation> relation = dbPediaAffiliatedCompanyRelationRepository.findById(dbPediaAffiliatedCompanyRelation.getId());
+//        if (relation.isPresent()) {
+//            return getCompanyInfoByDbProId(relation.get().getParentCompany());
+//        }
+//        return null;
+//    }
+//
+//    public List<CompanyInfo> getCompanyInfoByDbPediaAffiliatedCompanyRelationsSubsidiary(Set<DbPediaAffiliatedCompanyRelation> dbPediaAffiliatedCompanyRelations) {
+//        List<CompanyInfo> result = new ArrayList<>();
+//
+//        dbPediaAffiliatedCompanyRelations.forEach(dbPediaAffiliatedCompanyRelation -> {
+//            Optional<DbPediaAffiliatedCompanyRelation> relation = dbPediaAffiliatedCompanyRelationRepository.findById(dbPediaAffiliatedCompanyRelation.getId());
+//            if (relation.isPresent()) {
+//                result.add(getCompanyInfoByDbProId(relation.get().getSubsidiary()));
+//            }
+//        });
+//
+//        return result;
+//    }
 
     private String preferredLanguageKey = "de";
     private String fallbackLanguageKey = "en";
@@ -165,6 +235,38 @@ public class CompanyService {
         }
 
         return dbPediaAbstracts.iterator().next().getValue();
+    }
+
+    private List<String> getDbPediaLocationCountries(Set<DbPediaLocationCountry> dbPediaLocationCountries) {
+        if (dbPediaLocationCountries == null || dbPediaLocationCountries.size() == 0) {
+            return new ArrayList<>();
+        }
+
+        return dbPediaLocationCountries.stream().map(dbPediaLocationCountry -> dbPediaLocationCountry.getName()).collect(Collectors.toList());
+    }
+
+    private List<String> getDbPediaLocationCities(Set<DbPediaLocationCity> dbPediaLocationCities) {
+        if (dbPediaLocationCities == null || dbPediaLocationCities.size() == 0) {
+            return new ArrayList<>();
+        }
+
+        return dbPediaLocationCities.stream().map(dbPediaLocationCity -> dbPediaLocationCity.getName()).collect(Collectors.toList());
+    }
+
+    private List<Integer> getDbPediaFormationYears(Set<DbPediaFormationYear> dbPediaFormationYearSet) {
+        if (dbPediaFormationYearSet == null || dbPediaFormationYearSet.size() == 0) {
+            return new ArrayList<>();
+        }
+
+        return dbPediaFormationYearSet.stream().map(dbPediaFormationYear -> dbPediaFormationYear.getValue()).collect(Collectors.toList());
+    }
+
+    private List<Integer> getDbPediaNumberOfEmployees(Set<DbPediaNumberOfEmployees> dbPediaNumberOfEmployees) {
+        if (dbPediaNumberOfEmployees == null || dbPediaNumberOfEmployees.size() == 0) {
+            return new ArrayList<>();
+        }
+
+        return dbPediaNumberOfEmployees.stream().map(dbPediaFormationYear -> dbPediaFormationYear.getValue()).collect(Collectors.toList());
     }
 
 }
