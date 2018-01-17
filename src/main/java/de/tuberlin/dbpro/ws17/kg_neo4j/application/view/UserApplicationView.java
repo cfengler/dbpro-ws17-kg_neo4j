@@ -4,11 +4,14 @@ import de.tuberlin.dbpro.ws17.kg_neo4j.ApplicationStartup;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.Layout;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.MainNeighbourLayout;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.Model;
+import de.tuberlin.dbpro.ws17.kg_neo4j.application.ParentSubsidiaryLayout;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.viewmodel.CellTypeViewModel;
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.viewmodel.GraphViewModel;
 import de.tuberlin.dbpro.ws17.kg_neo4j.domain.Company;
 import de.tuberlin.dbpro.ws17.kg_neo4j.services.CompanyService;
 import javafx.application.Application;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -29,6 +32,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserApplicationView extends Application {
@@ -46,6 +50,9 @@ public class UserApplicationView extends Application {
     private static final Label lblSelection = new Label();
     private static final Label lblSelectionReturn = new Label();
 
+    private static final ScrollPane spInformation = new ScrollPane();
+    private static final Label lblInformation = new Label();
+
     private static final Button btnSearch = new Button();
     private static final Button btnSelectionReturn = new Button();
 
@@ -57,63 +64,28 @@ public class UserApplicationView extends Application {
     private static final ToggleGroup tgSearch = new ToggleGroup();
 
     private static final String fontname = "Helvetica Neue";
-
-
-    //protected static void launchApp(Class<? extends UserApplicationView> appClass, String[] args) {
-    //    Application.launch(appClass, args);
-   // }
-    //@Autowired
-    //private CompanyService companyService = null;
-
-
-    public UserApplicationView(){ //CompanyService companyService) {
-//        this.companyService = companyService;
-    }
+    private static CompanyService companyService;
+    private static List<Company> listCompanies;
+    private static GraphViewModel graph;
+    private static Model model;
+    private static Layout layout;
 
     private AnnotationConfigApplicationContext context;
 
     public void start(Stage primaryStage) {
         context = new AnnotationConfigApplicationContext(ApplicationStartup.class);
-
-        CompanyService companyService = context.getBean(CompanyService.class);
+        companyService = context.getBean(CompanyService.class);
         List<Company> test = companyService.getCompaniesByLocationContainingName("Lufthansa");
+
         primaryStage.setTitle("DBPRO");
 
         initSearch();
         initSelection();
 
-        //Beispiel Graph anlegen Anfang
-        GraphViewModel graph = new GraphViewModel();
-
-        pnFoundation.setCenter(graph.getScrollPane());
-
-        //Testdaten Anfang
-        Model model = graph.getModel();
-
-        graph.beginUpdate();
-
-        model.addCell("Cell A", CellTypeViewModel.MAIN);
-        model.addCell("Cell B", CellTypeViewModel.NEIGHBOUR);
-        model.addCell("Cell C", CellTypeViewModel.NEIGHBOUR);
-        model.addCell("Cell D", CellTypeViewModel.NEIGHBOUR);
-        model.addCell("Cell E", CellTypeViewModel.NEIGHBOUR);
-        model.addCell("Cell F", CellTypeViewModel.NEIGHBOUR);
-        model.addCell("Cell G", CellTypeViewModel.NEIGHBOUR);
-
-        model.addEdge("Cell A", "Cell B");
-        model.addEdge("Cell A", "Cell C");
-        model.addEdge("Cell A", "Cell D");
-        model.addEdge("Cell A", "Cell E");
-        model.addEdge("Cell A", "Cell F");
-        model.addEdge("Cell A", "Cell G");
-
-        graph.endUpdate();
-        //Testdaten Ende
-
-        //Layout layout = new RandomLayout(graph);
-        Layout layout = new MainNeighbourLayout(graph);
-        layout.execute();
-        //Beispiel Ende
+        lblInformation.setStyle("-fx-wrap-text: true;");
+        lblInformation.setPrefWidth(200);
+        spInformation.setContent(lblInformation);
+        pnFoundation.setRight(spInformation);
 
         primaryStage.setScene(new Scene(pnFoundation, 1000, 500));
         primaryStage.show();
@@ -132,15 +104,10 @@ public class UserApplicationView extends Application {
         pnSearch.add(lblHeadline, 0, 0);
 
         //Suchfeld
-        tfSearch.setOnKeyPressed(new EventHandler<KeyEvent>()
-        {
-            @Override
-            public void handle(KeyEvent ke)
+        tfSearch.setOnKeyPressed(ke -> {
+            if (ke.getCode().equals(KeyCode.ENTER))
             {
-                if (ke.getCode().equals(KeyCode.ENTER))
-                {
-                    search();
-                }
+                search();
             }
         });
         tfSearch.setPromptText("Suchbegriff");
@@ -150,12 +117,7 @@ public class UserApplicationView extends Application {
         //Suchbutton
         btnSearch.setText("suchen");
         btnSearch.setFont(new Font(fontname, 13));
-        btnSearch.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                search();
-            }
-        });
+        btnSearch.setOnAction(event -> search());
         pnSearchField.setRight(btnSearch);
         pnSearch.add(pnSearchField, 0, 1);
 
@@ -198,12 +160,7 @@ public class UserApplicationView extends Application {
         btnSelectionReturn.setText("<- zurück");
         btnSelectionReturn.setFont(new Font(fontname, 13));
         pnSelectionReturn.setSpacing(5);
-        btnSelectionReturn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                unhideSelection();
-            }
-        });
+        btnSelectionReturn.setOnAction(event -> unhideSelection());
     }
 
     public static void search() {
@@ -216,7 +173,25 @@ public class UserApplicationView extends Application {
 
         pnSelection.getChildren().remove(0, pnSelection.getChildren().size());
 
-        if(rbNodes.isSelected()) {
+        if(term.matches("[0-9]+")) {
+            listCompanies = companyService.getCompaniesByFormationYear(Integer.parseInt(term));
+            lblSelection.setText("Gründungsjahr");
+        } else {
+            listCompanies = companyService.getCompaniesByLocationContainingName(term);
+            lblSelection.setText("Firmensitz");
+            if(listCompanies.size() == 0) {
+                listCompanies = companyService.getCompaniesByLabelContainingName(term);
+                lblSelection.setText("Name");
+            }
+        }
+
+        for(Company c: listCompanies) {
+            Button btn = new Button(c.name);
+            btn.setOnAction(event -> displayCompany(c));
+            pnSelection.getChildren().add(btn);
+        }
+
+        /*if(rbNodes.isSelected()) {
             selection = 0;
             lblSelection.setText("Knoten");
             //TODO: HIER MUSS DIE SUCHE NACH KNOTEN AN DIE LOGIK WEITERGEGEBEN WERDEN
@@ -241,7 +216,34 @@ public class UserApplicationView extends Application {
                 }
             });
             pnSelection.getChildren().add(btn);
+        }*/
+    }
+
+    public static void displayCompany(Company company) {
+        companyService.resolveDbPediaAffiliatedCompanyRelation(company);
+        hideSelection(company.name);
+        updateInformation(company);
+
+        graph = new GraphViewModel();
+        pnFoundation.setCenter(graph.getScrollPane());
+        model = graph.getModel();
+        graph.beginUpdate();
+
+        model.addCell(company, CellTypeViewModel.MAIN);
+        if(company.dbPediaParentCompany != null) {
+            model.addCell(company.dbPediaParentCompany, CellTypeViewModel.PARENT);
+            model.addEdge(company.name, company.dbPediaParentCompany.name);
         }
+        if(company.dbPediaSubsidiaries != null) {
+            for(Company c: company.dbPediaSubsidiaries) {
+                model.addCell(c, CellTypeViewModel.SUBSIDIARY);
+                model.addEdge(company.name, c.name);
+            }
+        }
+
+        graph.endUpdate();
+        layout = new ParentSubsidiaryLayout(graph);
+        layout.execute();
     }
 
     private static void hideSelection(String term) {
@@ -256,5 +258,25 @@ public class UserApplicationView extends Application {
     private static void unhideSelection() {
         System.out.println("called unhideSelection");
         spSelection.setContent(pnSelection);
+    }
+
+    private static void updateInformation(Company company) {
+        lblInformation.setText("Name: " + company.name);
+        lblInformation.setText(lblInformation.getText() + "\nBPROID: " + company.dbProId);
+        if(company.dbPediaLocationCities != null) {
+            lblInformation.setText(lblInformation.getText() + "\nDBpedia Städte: " + company.dbPediaLocationCities);
+        }
+        if(company.dbPediaLocationCountries != null) {
+            lblInformation.setText(lblInformation.getText() + "\nDBpedia Länder: " + company.dbPediaLocationCountries);
+        }
+        if(company.dbPediaFormationYears != null) {
+            lblInformation.setText(lblInformation.getText() + "\nDBpedia Gründungen: " + company.dbPediaFormationYears);
+        }
+        if(company.dbPediaNumberOfEmployees != null) {
+            lblInformation.setText(lblInformation.getText() + "\nDBpedia Mitarbeiter: " + company.dbPediaNumberOfEmployees);
+        }
+        if(company.dbPediaAbstract != null) {
+            lblInformation.setText(lblInformation.getText() + "\nDBpedia Abstract: " + company.dbPediaAbstract);
+        }
     }
 }

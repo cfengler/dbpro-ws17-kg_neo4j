@@ -1,6 +1,8 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.application;
 
 import de.tuberlin.dbpro.ws17.kg_neo4j.application.viewmodel.*;
+import de.tuberlin.dbpro.ws17.kg_neo4j.domain.Company;
+import de.tuberlin.dbpro.ws17.kg_neo4j.domain.DbProId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +25,7 @@ public class Model {
 
     public Model() {
 
-        graphParent = new CellViewModel( "_ROOT_", CellTypeViewModel.MAIN);
+        graphParent = new CellViewModel( "_ROOT_", new DbProId(), CellTypeViewModel.MAIN);
 
         // clear model, create lists
         clear();
@@ -72,20 +74,25 @@ public class Model {
         return allEdges;
     }
 
-    public void addCell(String id, CellTypeViewModel type) {
+    public void addCell(Company company, CellTypeViewModel type) {
 
         switch (type) {
-
             case MAIN:
-                MainCellViewModel rectangleCell = new MainCellViewModel(id, type);
-                addCell(rectangleCell);
+                MainCellViewModel mainCell = new MainCellViewModel(company);
+                addCell(mainCell);
                 break;
-
             case NEIGHBOUR:
-                NeighbourCellViewModel circleCell = new NeighbourCellViewModel(id, type);
-                addCell(circleCell);
+                NeighbourCellViewModel neighbourCell = new NeighbourCellViewModel(company);
+                addCell(neighbourCell);
                 break;
-
+            case PARENT:
+                ParentCellViewModel parentCell = new ParentCellViewModel(company);
+                addCell(parentCell);
+                break;
+            case SUBSIDIARY:
+                SubsidiaryCellViewModel subsidiaryCell = new SubsidiaryCellViewModel(company);
+                addCell(subsidiaryCell);
+                break;
             default:
                 throw new UnsupportedOperationException("Unsupported type: " + type);
         }
@@ -95,7 +102,7 @@ public class Model {
 
         addedCells.add(cell);
 
-        cellMap.put( cell.getCellId(), cell);
+        cellMap.put( cell.getName(), cell);
 
     }
 

@@ -3,12 +3,15 @@ package de.tuberlin.dbpro.ws17.kg_neo4j.application.viewmodel;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.tuberlin.dbpro.ws17.kg_neo4j.domain.DbProId;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 
 public class CellViewModel extends Pane {
 
-    private String cellId;
+    private String name;
+
+    private DbProId dbproid;
 
     private CellTypeViewModel cellType;
 
@@ -17,8 +20,9 @@ public class CellViewModel extends Pane {
 
     Node view;
 
-    public CellViewModel(String cellId, CellTypeViewModel cellType) {
-        this.cellId = cellId;
+    public CellViewModel(String name, DbProId dbproid, CellTypeViewModel cellType) {
+        this.name = name;
+        this.dbproid = dbproid;
         this.cellType = cellType;
     }
 
@@ -57,7 +61,15 @@ public class CellViewModel extends Pane {
         return this.view;
     }
 
-    public String getCellId() {
-        return cellId;
+    public String getName() {
+        return name;
+    }
+
+    public DbProId getDbproid() {
+        return dbproid;
+    }
+
+    public void setDbproid(DbProId dbproid) {
+        this.dbproid = dbproid;
     }
 }
