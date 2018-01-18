@@ -15,13 +15,13 @@ public class DbPediaAffiliatedCompanyRelation {
     private long customId;
 
     @Relationship(type = "HAS_DBPEDIA_PARENT_COMPANY", direction = Relationship.INCOMING)
-    DbProId subsidiary;
+    private DbProId subsidiary;
 
     @Relationship(type = "HAS_DBPEDIA_SUBSIDIARY", direction = Relationship.INCOMING)
-    DbProId parentCompany;
+    private DbProId parentCompany;
 
     @Relationship(type = "DATA_FROM", direction = Relationship.OUTGOING)
-    DataProvider dataProvider;
+    private DataProvider dataProvider;
 
     public DbPediaAffiliatedCompanyRelation() {
 

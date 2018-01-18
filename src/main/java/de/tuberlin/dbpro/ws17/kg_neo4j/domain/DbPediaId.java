@@ -18,10 +18,10 @@ public class DbPediaId {
     private String value = null;
 
     @Relationship(type="SAME_AS", direction = Relationship.OUTGOING)
-    DbProId dbProId;
+    private DbProId dbProId;
 
     @Relationship(type="DATA_FROM", direction = Relationship.OUTGOING)
-    Set<DataProvider> dataProviders;
+    private Set<DataProvider> dataProviders;
 
     public DbPediaId() {
         this.dataProviders = new HashSet<>();

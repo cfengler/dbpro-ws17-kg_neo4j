@@ -17,10 +17,10 @@ public class DbPediaLocationCity {
     private String name;
 
     @Relationship(type = "HAS_DBPEDIA_LOCATION_CITY", direction = Relationship.INCOMING)
-    Set<DbProId> dbProIds;
+    private Set<DbProId> dbProIds;
 
     @Relationship(type = "DATA_FROM", direction = Relationship.OUTGOING)
-    DataProvider dataProvider;
+    private DataProvider dataProvider;
 
     public DbPediaLocationCity() {
 

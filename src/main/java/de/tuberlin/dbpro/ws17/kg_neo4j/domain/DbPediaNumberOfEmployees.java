@@ -17,10 +17,10 @@ public class DbPediaNumberOfEmployees {
     private int value;
 
     @Relationship(type = "HAS_DBPEDIA_NUMBER_OF_EMPLOYEES", direction = Relationship.INCOMING)
-    DbProId dbProId;
+    private DbProId dbProId;
 
     @Relationship(type = "DATA_FROM", direction = Relationship.OUTGOING)
-    DataProvider dataProvider;
+    private DataProvider dataProvider;
 
     public DbPediaNumberOfEmployees() {
 

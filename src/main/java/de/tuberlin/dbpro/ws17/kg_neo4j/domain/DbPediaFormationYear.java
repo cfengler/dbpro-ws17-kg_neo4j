@@ -17,10 +17,10 @@ public class DbPediaFormationYear {
     private int value;
 
     @Relationship(type = "HAS_DBPEDIA_FORMATION_YEAR", direction = Relationship.INCOMING)
-    Set<DbProId> dbProIds;
+    private Set<DbProId> dbProIds;
 
     @Relationship(type = "DATA_FROM", direction = Relationship.OUTGOING)
-    DataProvider dataProvider;
+    private DataProvider dataProvider;
 
     public DbPediaFormationYear() {
 

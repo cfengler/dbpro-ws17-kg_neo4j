@@ -17,34 +17,34 @@ public class DbProId {
     private long value;
 
     @Relationship(type = "SAME_AS", direction = Relationship.INCOMING)
-    DbPediaId dbPediaId;
+    private DbPediaId dbPediaId;
 
     @Relationship(type = "DATA_FROM", direction = Relationship.OUTGOING)
-    DataProvider dataProvider;
+    private DataProvider dataProvider;
 
     @Relationship(type = "HAS_LABEL", direction = Relationship.OUTGOING)
-    Set<DbPediaLabel> dbPediaLabels;
+    private Set<DbPediaLabel> dbPediaLabels;
 
     @Relationship(type = "HAS_ABSTRACT", direction = Relationship.OUTGOING)
-    Set<DbPediaAbstract> dbPediaAbstracts;
+    private Set<DbPediaAbstract> dbPediaAbstracts;
 
     @Relationship(type = "HAS_DBPEDIA_PARENT_COMPANY", direction = Relationship.OUTGOING)
-    DbPediaAffiliatedCompanyRelation dbPediaParentCompany;
+    private DbPediaAffiliatedCompanyRelation dbPediaParentCompany;
 
     @Relationship(type = "HAS_DBPEDIA_SUBSIDIARY", direction = Relationship.OUTGOING)
-    Set<DbPediaAffiliatedCompanyRelation> dbPediaSubsidiaries;
+    private Set<DbPediaAffiliatedCompanyRelation> dbPediaSubsidiaries;
 
     @Relationship(type = "HAS_DBPEDIA_LOCATION_COUNTRY", direction = Relationship.OUTGOING)
-    Set<DbPediaLocationCountry> dbPediaLocationCountries;
+    private Set<DbPediaLocationCountry> dbPediaLocationCountries;
 
     @Relationship(type = "HAS_DBPEDIA_LOCATION_CITY", direction = Relationship.OUTGOING)
-    Set<DbPediaLocationCity> dbPediaLocationCities;
+    private Set<DbPediaLocationCity> dbPediaLocationCities;
 
     @Relationship(type = "HAS_DBPEDIA_FORMATION_YEAR", direction = Relationship.OUTGOING)
-    Set<DbPediaFormationYear> dbPediaFormationYears;
+    private Set<DbPediaFormationYear> dbPediaFormationYears;
 
     @Relationship(type = "HAS_DBPEDIA_NUMBER_OF_EMPLOYEES", direction = Relationship.OUTGOING)
-    Set<DbPediaNumberOfEmployees> dbPediaNumberOfEmployees;
+    private Set<DbPediaNumberOfEmployees> dbPediaNumberOfEmployees;
 
     public DbProId() {
 

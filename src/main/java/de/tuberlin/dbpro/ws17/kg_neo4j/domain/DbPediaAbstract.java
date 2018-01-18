@@ -16,10 +16,10 @@ public class DbPediaAbstract {
     private String languageKey;
 
     @Relationship(type = "HAS_ABSTRACT", direction = Relationship.INCOMING)
-    DbProId dbProId;
+    private DbProId dbProId;
 
     @Relationship(type = "DATA_FROM", direction = Relationship.OUTGOING)
-    DataProvider dataProvider;
+    private DataProvider dataProvider;
 
     public DbPediaAbstract() {
 
