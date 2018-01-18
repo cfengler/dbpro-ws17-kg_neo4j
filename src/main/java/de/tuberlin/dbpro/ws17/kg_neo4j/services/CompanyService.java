@@ -15,6 +15,7 @@ public class CompanyService {
 
     private DbProIdService dbProIdService = null;
     private DbPediaLabelRepository dbPediaLabelRepository = null;
+    private DbPediaAbstractRepository dbPediaAbstractRepository = null;
     private DbPediaAffiliatedCompanyRelationRepository dbPediaAffiliatedCompanyRelationRepository = null;
     private DbPediaLocationCountryRepository dbPediaLocationCountryRepository = null;
     private DbPediaLocationCityRepository dbPediaLocationCityRepository = null;
@@ -23,6 +24,7 @@ public class CompanyService {
     @Autowired
     public CompanyService(DbProIdService dbProIdService,
                           DbPediaLabelRepository dbPediaLabelRepository,
+                          DbPediaAbstractRepository dbPediaAbstractRepository,
                           DbPediaAffiliatedCompanyRelationRepository dbPediaAffiliatedCompanyRelationRepository,
                           DbPediaLocationCountryRepository dbPediaLocationCountryRepository,
                           DbPediaLocationCityRepository dbPediaLocationCityRepository,
@@ -30,6 +32,7 @@ public class CompanyService {
         this.dbProIdService = dbProIdService;
         this.dbPediaAffiliatedCompanyRelationRepository = dbPediaAffiliatedCompanyRelationRepository;
         this.dbPediaLabelRepository = dbPediaLabelRepository;
+        this.dbPediaAbstractRepository = dbPediaAbstractRepository;
         this.dbPediaLocationCountryRepository = dbPediaLocationCountryRepository;
         this.dbPediaLocationCityRepository = dbPediaLocationCityRepository;
         this.dbPediaFormationYearRepository = dbPediaFormationYearRepository;
@@ -46,6 +49,20 @@ public class CompanyService {
             return result;
         }
         //TODO: search somewhere else...
+        return new ArrayList<>();
+    }
+
+    public List<Company> getCompaniesByAbstractContainingValue(String value) {
+        List<DbPediaAbstract> dbPediaAbstracts = this.dbPediaAbstractRepository.findByValueContainsIgnoreCase(value);
+        Set<Long> dbProIdValues = new HashSet<>();
+        dbPediaAbstracts.stream().forEach(dbPediaAbstract -> dbProIdValues.add(dbPediaAbstract.getDbProId().getValue()));
+
+        if (dbProIdValues.size() > 0) {
+            List<DbProId> dbProIds = dbProIdService.findDbProIdsByValueIn(dbProIdValues);
+            List<Company> result = new ArrayList<>(convertDbProIdsToCompanies(dbProIds));
+            return result;
+        }
+
         return new ArrayList<>();
     }
 

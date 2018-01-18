@@ -63,7 +63,7 @@ public class StartupService implements CommandLineRunner, ApplicationContextAwar
         //List<Company> companies = companyService.getCompaniesByLabelContainingName("Porsche Automobil Holding");
 
         //List<Company> companies = companyService.getCompaniesByLabelContainingName("Volkswagen Group");
-        List<Company> companies = companyService.getCompaniesByLabelContainingName("Volkswagen AG");
+        List<Company> companies = companyService.getCompaniesByAbstractContainingValue("Baumeister");
         //List<Company> companies = companyService.getCompaniesByLabelContainingName("Volkswagen Commercial Vehicles");
         //List<Company> companies = companyService.getCompaniesByLabelContainingName("Lufthansa");
         //List<Company> companies = companyService.getCompaniesByLabelContainingName("Activision");
