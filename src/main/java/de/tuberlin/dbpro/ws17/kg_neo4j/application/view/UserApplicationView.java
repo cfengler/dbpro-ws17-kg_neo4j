@@ -71,6 +71,7 @@ public class UserApplicationView extends Application {
     private static Layout layout;
 
     private AnnotationConfigApplicationContext context;
+    public static long lastTimestamp = 0;
 
     public void start(Stage primaryStage) {
         context = new AnnotationConfigApplicationContext(ApplicationStartup.class);
@@ -83,7 +84,7 @@ public class UserApplicationView extends Application {
         initSelection();
 
         lblInformation.setStyle("-fx-wrap-text: true;");
-        lblInformation.setPrefWidth(200);
+        lblInformation.setPrefWidth(300);
         spInformation.setContent(lblInformation);
         pnFoundation.setRight(spInformation);
 
@@ -125,15 +126,15 @@ public class UserApplicationView extends Application {
         rbNodes.setText("Knoten");
         rbNodes.setSelected(true);
         rbNodes.setToggleGroup(tgSearch);
-        pnSearchType.getChildren().add(rbNodes);
+        //pnSearchType.getChildren().add(rbNodes);
 
         rbLabels.setText("Bezeichnung");
         rbLabels.setToggleGroup(tgSearch);
-        pnSearchType.getChildren().add(rbLabels);
+        //pnSearchType.getChildren().add(rbLabels);
 
         rbEdges.setText("Kante");
         rbEdges.setToggleGroup(tgSearch);
-        pnSearchType.getChildren().add(rbEdges);
+        //pnSearchType.getChildren().add(rbEdges);
         pnSearch.add(pnSearchType, 0, 2);
 
         pnFoundation.setTop(pnSearch);
@@ -182,6 +183,10 @@ public class UserApplicationView extends Application {
             if(listCompanies.size() == 0) {
                 listCompanies = companyService.getCompaniesByLabelContainingName(term);
                 lblSelection.setText("Name");
+                if(listCompanies.size() == 0) {
+                    listCompanies = companyService.getCompaniesByAbstractContainingValue(term);
+                    lblSelection.setText("Abstract");
+                }
             }
         }
 
@@ -190,33 +195,6 @@ public class UserApplicationView extends Application {
             btn.setOnAction(event -> displayCompany(c));
             pnSelection.getChildren().add(btn);
         }
-
-        /*if(rbNodes.isSelected()) {
-            selection = 0;
-            lblSelection.setText("Knoten");
-            //TODO: HIER MUSS DIE SUCHE NACH KNOTEN AN DIE LOGIK WEITERGEGEBEN WERDEN
-
-        } else if (rbLabels.isSelected()) {
-            selection = 1;
-            lblSelection.setText("Bezeichnungen");
-            //TODO: HIER MUSS DIE SUCHE NACH LABELS AN DIE LOGIK WEITERGEGEBEN WERDEN
-
-        } else {
-            selection = 2;
-            lblSelection.setText("Kanten");
-            //TODO: HIER MUSS DIE SUCHE NACH KANTEN AN DIE LOGIK WEITERGEGEBEN WERDEN
-
-        }
-        for(int i = 0;i < 10;i++) {
-            Button btn = new Button(lblSelection.getText() + " " + term + " " + (i + 1));
-            btn.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    hideSelection(((Button)event.getSource()).getText());
-                }
-            });
-            pnSelection.getChildren().add(btn);
-        }*/
     }
 
     public static void displayCompany(Company company) {
@@ -278,5 +256,17 @@ public class UserApplicationView extends Application {
         if(company.dbPediaAbstract != null) {
             lblInformation.setText(lblInformation.getText() + "\nDBpedia Abstract: " + company.dbPediaAbstract);
         }
+    }
+
+    public static void setTimestamp() {
+        lastTimestamp = System.currentTimeMillis();
+    }
+
+    public static boolean isClick() {
+        long temp = System.currentTimeMillis();
+        if(temp - lastTimestamp < 100) {
+            return true;
+        }
+        return false;
     }
 }

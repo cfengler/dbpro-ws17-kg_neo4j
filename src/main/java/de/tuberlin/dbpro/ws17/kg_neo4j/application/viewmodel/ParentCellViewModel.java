@@ -26,8 +26,13 @@ public class ParentCellViewModel extends CellViewModel {
         ellipse.setRadiusX(100);
         ellipse.setRadiusY(50);
         ellipse.setFill(Color.RED);
-        ellipse.setOnMouseClicked(event -> {
-            UserApplicationView.displayCompany(company);
+        ellipse.setOnMousePressed(event -> {
+            UserApplicationView.setTimestamp();
+        });
+        ellipse.setOnMouseReleased(event -> {
+            if(UserApplicationView.isClick()) {
+                UserApplicationView.displayCompany(company);
+            }
         });
 
         Label lbl = new Label(company.name);

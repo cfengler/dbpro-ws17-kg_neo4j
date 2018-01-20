@@ -27,12 +27,19 @@ public class SubsidiaryCellViewModel extends CellViewModel {
         ellipse.setRadiusX(100);
         ellipse.setRadiusY(50);
         ellipse.setFill(Color.BLUE);
-        ellipse.setOnMousePressed(event -> UserApplicationView.displayCompany(company));
+        ellipse.setOnMousePressed(event -> {
+            UserApplicationView.setTimestamp();
+        });
+        ellipse.setOnMouseReleased(event -> {
+            if(UserApplicationView.isClick()) {
+                UserApplicationView.displayCompany(company);
+            }
+        });
 
         Label lbl = new Label(company.name);
         lbl.setFont(new Font("Helvetica Neue", 20));
         lbl.setTextFill(Color.WHITE);
-        lbl.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> ellipse.fireEvent(e));
+        lbl.addEventHandler(MouseEvent.ANY, e -> ellipse.fireEvent(e));
 
         pane.getChildren().add(ellipse);
         pane.getChildren().add(lbl);
