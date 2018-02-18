@@ -1,8 +1,6 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.services;
 
 import de.tuberlin.dbpro.ws17.kg_neo4j.domain.Company;
-import de.tuberlin.dbpro.ws17.kg_neo4j.domain.CompanyInfo;
-import de.tuberlin.dbpro.ws17.kg_neo4j.domain.DbPediaFormationYear;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
