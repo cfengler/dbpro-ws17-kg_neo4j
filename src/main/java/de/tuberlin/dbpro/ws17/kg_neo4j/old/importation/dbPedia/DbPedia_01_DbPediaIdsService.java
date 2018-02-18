@@ -1,17 +1,13 @@
-package de.tuberlin.dbpro.ws17.kg_neo4j.importation.dbPedia;
+package de.tuberlin.dbpro.ws17.kg_neo4j.old.importation.dbPedia;
 
-import de.tuberlin.dbpro.ws17.kg_neo4j.common.ParseHelper;
 import de.tuberlin.dbpro.ws17.kg_neo4j.domain.DataProvider;
 import de.tuberlin.dbpro.ws17.kg_neo4j.domain.DbPediaId;
 import de.tuberlin.dbpro.ws17.kg_neo4j.domain.DbProId;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class DbPedia_01_DbPediaIdsService {
 

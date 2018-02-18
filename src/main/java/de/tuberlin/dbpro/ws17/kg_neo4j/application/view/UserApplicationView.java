@@ -76,7 +76,7 @@ public class UserApplicationView extends Application {
     public void start(Stage primaryStage) {
         context = new AnnotationConfigApplicationContext(ApplicationStartup.class);
         companyService = context.getBean(CompanyService.class);
-        List<Company> test = companyService.getCompaniesByLocationContainingName("Lufthansa");
+        //List<Company> test = companyService.getCompaniesByLocationContainingName("Lufthansa");
 
         primaryStage.setTitle("DBPRO");
 

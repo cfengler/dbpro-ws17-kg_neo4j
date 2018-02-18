@@ -1,4 +1,4 @@
-package de.tuberlin.dbpro.ws17.kg_neo4j.importation;
+package de.tuberlin.dbpro.ws17.kg_neo4j.old.importation;
 
 import de.tuberlin.dbpro.ws17.kg_neo4j.old.model.EquivalenceRelation;
 

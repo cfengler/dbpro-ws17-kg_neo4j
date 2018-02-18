@@ -1,8 +1,4 @@
-package de.tuberlin.dbpro.ws17.kg_neo4j.importation;
-
-import de.tuberlin.dbpro.ws17.kg_neo4j.common.*;
-
-import java.util.List;
+package de.tuberlin.dbpro.ws17.kg_neo4j.old.importation;
 
 public class GcdId_DbProId_Importer {
 

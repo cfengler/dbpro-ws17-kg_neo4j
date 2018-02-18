@@ -17,7 +17,7 @@ public class StartupService implements CommandLineRunner, ApplicationContextAwar
 
     @Override
     public void run(String... strings) throws Exception {
-        testSearchByLabel();
+        //testSearchByLabel();
 
 //        List<Company> companies = companyService.getCompaniesByFormationYear(1985);
 

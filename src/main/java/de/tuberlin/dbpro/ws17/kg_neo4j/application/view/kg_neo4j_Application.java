@@ -1,6 +1,5 @@
 package de.tuberlin.dbpro.ws17.kg_neo4j.application.view;
 
-import de.tuberlin.dbpro.ws17.kg_neo4j.importation.SmartDataWebImporter;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,12 +11,9 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Ellipse;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
 
 public class kg_neo4j_Application extends Application {
 
